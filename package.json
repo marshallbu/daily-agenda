@@ -1,0 +1,37 @@
+{
+  "name": "dayview",
+  "version": "0.0.1",
+  "description": "a day view for FB",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "private": true,
+  "devDependencies": {
+    "exports-loader": "^0.6.2",
+    "expose-loader": "^0.5.3",
+    "gulp": "^3.8.8",
+    "gulp-bower": "0.0.6",
+    "gulp-file-include": "^0.5.1",
+    "gulp-if": "^1.2.5",
+    "gulp-jshint": "^1.8.5",
+    "gulp-less": "^1.3.6",
+    "gulp-load-plugins": "^0.7.0",
+    "gulp-minify-css": "^0.3.10",
+    "gulp-minify-html": "^0.1.6",
+    "gulp-notify": "^2.0.0",
+    "gulp-preprocess": "^1.1.1",
+    "gulp-rimraf": "^0.1.1",
+    "gulp-sourcemaps": "^1.2.4",
+    "gulp-util": "^3.0.1",
+    "mkdirp": "^0.5.0",
+    "moment": "^2.8.3",
+    "pretty-hrtime": "^0.2.2",
+    "rimraf": "^2.2.8",
+    "run-sequence": "^1.0.1",
+    "vinyl-source-stream": "^1.0.0",
+    "webpack": "^1.4.5",
+    "yargs": "^1.3.2"
+  }
+}
