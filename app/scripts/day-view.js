@@ -9,18 +9,6 @@ var DayView = function DayView(options) {
     self.options = options ? options : {};
     self.currentEvents = [];
 
-    // let's store the current date, we could use a standard JS Date, but moment
-    // is more flexible especially for dealing with other locales
-    // TODO: you should also be able to change/modify this
-    self.currentDate = moment().startOf('day');
-
-    // expect a non empty jQuery object
-    if (!(self.options.view instanceof $)) {
-        console.error('tried to instantiate without proper view');
-    } else {
-        self.view = self.options.view;
-    }
-
     // TODO: make this range configurable
     self.dayRangeStart = moment().hours(9).minutes(0);
     self.dayRangeEnd = moment().hours(21).minutes(0);
@@ -29,8 +17,16 @@ var DayView = function DayView(options) {
     // positioning of elements
     self.dayRangeDiffInMs = self.dayRangeStart.diff(self.dayRangeEnd);
 
-    // initialize the view
-    self._initView();
+    // expect a non empty jQuery object
+    if (!(self.options.view instanceof $)) {
+        // TODO: display some visual error
+        console.error('tried to instantiate without proper view');
+    } else {
+        self.view = self.options.view;
+
+        // initialize the view
+        self._initView();
+    }
 
     // provide window function to add event items
     window.layOutDay = self.layOutDay;
@@ -39,6 +35,8 @@ var DayView = function DayView(options) {
 /**
  * this function will initialize our day view, setting up scaffolding and common
  * elements that shouldn't change outside of CSS media queries
+ *
+ * TODO: break this down into more separated chunks
  */
 DayView.prototype._initView = function _initView() {
     var labelsTemplate, eventsTemplate, currentTime;
@@ -48,38 +46,48 @@ DayView.prototype._initView = function _initView() {
     labelsTemplate = $(dayViewLabelsTemplate);
     eventsTemplate = $(dayViewEventsTemplate);
 
-    // start our time at the set dayStart
+    // clone a moment at the set dayRangeStart
     currentTime = moment(self.dayRangeStart);
 
+    // build our time labels and position accordingly
     while(!(currentTime.isAfter(self.dayRangeEnd))) {
         var label, percentageFromTop;
 
         label = $('<div class="time-label"></div>');
         label.text(currentTime.format('h:mm'));
 
-        // calculate position by using the currentTimes difference from dayStart
-        // and the overall difference self.dayTimeDiffInMs
-        percentageFromTop = parseFloat(self.dayRangeStart.diff(currentTime) / self.dayRangeDiffInMs) * 100;
-        label.css('top', percentageFromTop + '%');
+        label.css('top', self._calculatePercentageInDayRange(currentTime) + '%');
 
         if(currentTime.minutes() === 0) {
             label.addClass('top-of-hour');
             label.append($('<span class="meridiem">').text(currentTime.format('A')));
         }
 
+        // attach to the labels template
         labelsTemplate.append(label);
 
         // advance our time 30 minutes, assuming that our range started/ended on
-        // the top or middle of the hour mark
+        // the top or middle of the hour
         currentTime.add(30, 'm');
     }
-
 
     // append the view templates to the view
     this.view.append(labelsTemplate, eventsTemplate);
 };
 
-DayView.prototype.render = function render() {
+/**
+ * This function is used to calculate the percentage within the currently set day
+ * range a given time falls.  Assumes the time is between dayRangeStart and
+ * dayRangeEnd.
+ *
+ * @param {moment} time a moment object set to a specific time
+ */
+DayView.prototype._calculatePercentageInDayRange = function _calculatePercentageInDayRange(time) {
+    var self = this;
+    return parseFloat(self.dayRangeStart.diff(time) / self.dayRangeDiffInMs) * 100;
+};
+
+DayView.prototype.renderEvents = function renderEvents() {
     console.log('hello');
 };
 
