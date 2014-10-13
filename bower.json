@@ -1,6 +1,6 @@
 {
   "name": "dayview",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "authors": [
     "Marshall Upshur <marshall@mbucreations.com>"
   ],
@@ -19,6 +19,10 @@
   "dependencies": {
     "jquery": "~2.1.1",
     "lodash": "~2.4.1",
-    "moment": "~2.8.3"
+    "moment": "~2.8.3",
+    "bootstrap": "~3.2.0"
+  },
+  "devDependencies": {
+    "normalize.css": "~3.0.2"
   }
 }

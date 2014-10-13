@@ -1,0 +1,56 @@
+@import "bootstrap-custom";
+
+html, body {
+    height: 100%;
+}
+
+.calendar-view {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    bottom: 30px;
+    left: 30px;
+}
+
+.time-labels {
+    position: absolute;
+    width: 100px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    .time-label {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 15px;
+        line-height: 15px;
+        padding-right: 10px;
+        margin-top: -7px;
+        text-align: right;
+        font-size: 0.857em;
+        color: #999999;
+
+        &.top-of-hour {
+            font-size: 1.000em;
+            color: #000;
+            /* font-weight: bold; */
+
+            .meridiem {
+                font-size: 0.857em;
+                color: #999999;
+                margin-left: 5px;
+            }
+        }
+    }
+}
+
+.events {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 100px;
+    background: #ececec;
+    border-left: 1px solid #c0c0c0;
+}
