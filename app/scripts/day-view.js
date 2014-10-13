@@ -1,7 +1,6 @@
 var $ = require('jquery'),
     _ = require('lodash'),
     moment = require('moment'),
-    dayViewLabelsTemplate = require('../partials/day-view-labels.html'),
     dayViewEventsTemplate = require('../partials/day-view-events.html');
 
 var DayView = function DayView(options) {
@@ -9,7 +8,7 @@ var DayView = function DayView(options) {
     self.options = options ? options : {};
     self.currentEvents = [];
 
-    // TODO: make this range configurable
+    // TODO: make this range configurable, even if not required
     self.dayRangeStart = moment().hours(9).minutes(0);
     self.dayRangeEnd = moment().hours(21).minutes(0);
 
@@ -19,10 +18,13 @@ var DayView = function DayView(options) {
 
     // expect a non empty jQuery object
     if (!(self.options.view instanceof $)) {
-        // TODO: display some visual error
+        // TODO: display some visual error, even if not required
         console.error('tried to instantiate without proper view');
     } else {
         self.view = self.options.view;
+
+        // initialize our DOM partial, keep a reference to it
+        self.eventsTemplate = $(dayViewEventsTemplate);
 
         // initialize the view
         self._initView();
@@ -39,12 +41,7 @@ var DayView = function DayView(options) {
  * TODO: break this down into more separated chunks
  */
 DayView.prototype._initView = function _initView() {
-    var labelsTemplate, eventsTemplate, currentTime;
-    var self = this;
-
-    // initialize our DOM partials
-    labelsTemplate = $(dayViewLabelsTemplate);
-    eventsTemplate = $(dayViewEventsTemplate);
+    var currentTime, self = this;
 
     // clone a moment at the set dayRangeStart
     currentTime = moment(self.dayRangeStart);
@@ -64,7 +61,7 @@ DayView.prototype._initView = function _initView() {
         }
 
         // attach to the labels template
-        labelsTemplate.append(label);
+        self.eventsTemplate.append(label);
 
         // advance our time 30 minutes, assuming that our range started/ended on
         // the top or middle of the hour
@@ -72,7 +69,7 @@ DayView.prototype._initView = function _initView() {
     }
 
     // append the view templates to the view
-    this.view.append(labelsTemplate, eventsTemplate);
+    self.view.append(self.eventsTemplate);
 };
 
 /**
