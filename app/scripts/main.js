@@ -11,9 +11,8 @@ var $ = require('jquery'),
         var myDayView = new DayView({
             view: viewContainer
         });
+
     } else {
         console.error('No div.calendar-view in HTML!');
     }
-
-
 }($, DayView));

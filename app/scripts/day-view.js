@@ -1,7 +1,9 @@
 var $ = require('jquery'),
+    // for templating, would do a custom build for production
     _ = require('lodash'),
     moment = require('moment'),
     dayViewEventsTemplate = require('../partials/day-view-events.html');
+    eventItemTemplate = require('../partials/event-item.html');
 
 var DayView = function DayView(options) {
     var self = this;
@@ -31,7 +33,7 @@ var DayView = function DayView(options) {
     }
 
     // provide window function to add event items
-    window.layOutDay = self.layOutDay;
+    window.layOutDay = self._renderEvents;
 };
 
 /**
@@ -84,8 +86,13 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
     return parseFloat(self.dayRangeStart.diff(time) / self.dayRangeDiffInMs) * 100;
 };
 
-DayView.prototype.renderEvents = function renderEvents() {
-    console.log('hello');
+/**
+ * This function takes in an array of event objects {start: Number, end: Number},
+ * and renders them to the view.
+ * @param {array} events an array of objects in the format {start: Number, end: Number}
+ */
+DayView.prototype._renderEvents = function _renderEvents(events) {
+    console.log(events);
 };
 
 DayView.prototype.refreshView = function refreshView() {
