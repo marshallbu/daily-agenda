@@ -25,15 +25,13 @@ var DayView = function DayView(options) {
     } else {
         self.view = self.options.view;
 
-        // initialize our DOM partial, keep a reference to it
+        // initialize our DOM partials, keep a reference to them
         self.eventsTemplate = $(dayViewEventsTemplate);
+        self.eventsEl = self.eventsTemplate.find('.events');
 
         // initialize the view
         self._initView();
     }
-
-    // provide window function to add event items
-    window.layOutDay = self._renderEvents;
 };
 
 /**
@@ -50,20 +48,20 @@ DayView.prototype._initView = function _initView() {
 
     // build our time labels and position accordingly
     while(!(currentTime.isAfter(self.dayRangeEnd))) {
-        var label, percentageFromTop;
+        var labelEl, percentageFromTop;
 
-        label = $('<div class="time-label"></div>');
-        label.text(currentTime.format('h:mm'));
+        labelEl = $('<div class="time-label"></div>');
+        labelEl.text(currentTime.format('h:mm'));
 
-        label.css('top', self._calculatePercentageInDayRange(currentTime) + '%');
+        labelEl.css('top', self._calculatePercentageInDayRange(currentTime) + '%');
 
         if(currentTime.minutes() === 0) {
-            label.addClass('top-of-hour');
-            label.append($('<span class="meridiem">').text(currentTime.format('A')));
+            labelEl.addClass('top-of-hour');
+            labelEl.append($('<span class="meridiem">').text(currentTime.format('A')));
         }
 
         // attach to the labels template
-        self.eventsTemplate.append(label);
+        self.eventsTemplate.append(labelEl);
 
         // advance our time 30 minutes, assuming that our range started/ended on
         // the top or middle of the hour
@@ -81,9 +79,43 @@ DayView.prototype._initView = function _initView() {
  *
  * @param {moment} time a moment object set to a specific time
  */
-DayView.prototype._calculatePercentageInDayRange = function _calculatePercentageInDayRange(time) {
-    var self = this;
-    return parseFloat(self.dayRangeStart.diff(time) / self.dayRangeDiffInMs) * 100;
+DayView.prototype._calculatePercentageInDayRange = function _calculatePercentageInDayRange(time, direction) {
+    var diff, self = this;
+    direction = direction || 'top'; // percentage from top or bottom of range
+
+    diff = parseFloat(self.dayRangeStart.diff(time) / self.dayRangeDiffInMs);
+
+    if (direction === 'bottom') {
+        // subtract from 100 to get percentage from bottom
+        return 100 - (diff * 100);
+    } else {
+        return diff * 100;
+    }
+};
+
+/**
+ * This function takes in an event object {start: Number, end: Number}, creates
+ * a DOM element and positions it in the view.
+ * @param {object} event {start: Number, end: Number}
+ */
+DayView.prototype._positionEvent = function _positionEvent(event) {
+    var eventItemEl, eventTime, percentageFromTop, self = this;
+
+    eventItemEl = $(eventItemTemplate);
+    eventItemEl.find('.title').text('Sample Item');
+    eventItemEl.find('.location').text('Sample Location');
+
+    // add the amount of minutes from our event to the dayRangeStart to get the
+    // event time
+    eventStart = moment(self.dayRangeStart).add(event.start, 'm');
+    eventEnd = moment(self.dayRangeStart).add(event.end, 'm');
+
+    // position the event based on it's time
+    eventItemEl.css('top', self._calculatePercentageInDayRange(eventStart) + '%');
+    eventItemEl.css('bottom', self._calculatePercentageInDayRange(eventEnd, 'bottom') + '%');
+
+    // add the event to the events container
+    self.eventsEl.append(eventItemEl);
 };
 
 /**
@@ -91,12 +123,30 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
  * and renders them to the view.
  * @param {array} events an array of objects in the format {start: Number, end: Number}
  */
-DayView.prototype._renderEvents = function _renderEvents(events) {
+DayView.prototype.renderEvents = function renderEvents(events) {
+    var eventsCount, self = this;
+
+    // clear out any current events
+    self._clearEvents();
+
+    // using lodash's sortBy, to make sure our events are in order
+    // this is essentially just a wrapper for Array.prototype.sort, with a sort
+    // function equivalent to function(a,b) { return a.start - b.start}
+    _.sortBy(events, 'start');
     console.log(events);
+    eventsCount = events.length;
+
+    for(var i = 0; i < eventsCount; ++i) {
+        self._positionEvent(events[i]);
+    }
 };
 
-DayView.prototype.refreshView = function refreshView() {
-
+/**
+ * Will clear any current events out of the events container.
+ */
+DayView.prototype._clearEvents = function _clearEvents() {
+    var self = this;
+    self.eventsEl.empty();
 };
 
 

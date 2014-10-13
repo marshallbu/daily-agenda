@@ -12,6 +12,11 @@ var $ = require('jquery'),
             view: viewContainer
         });
 
+        // provide window function to add event items
+        window.layOutDay = function(events) {
+            myDayView.renderEvents(events);
+        };
+        
     } else {
         console.error('No div.calendar-view in HTML!');
     }
