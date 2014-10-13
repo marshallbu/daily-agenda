@@ -125,7 +125,7 @@ DayView.prototype.renderEvents = function renderEvents(events) {
     self._clearEvents();
 
     var sortedEvents = events.sort(self._compareEvents('start'));
-    console.log(sortedEvents);
+    // console.log(sortedEvents);
     eventsCount = events.length;
 
     for(var i = 0; i < eventsCount; ++i) {
