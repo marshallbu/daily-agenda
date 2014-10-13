@@ -1,6 +1,4 @@
 var $ = require('jquery'),
-    // for templating, would do a custom build for production
-    _ = require('lodash'),
     moment = require('moment'),
     dayViewEventsTemplate = require('../partials/day-view-events.html');
     eventItemTemplate = require('../partials/event-item.html');
@@ -8,7 +6,6 @@ var $ = require('jquery'),
 var DayView = function DayView(options) {
     var self = this;
     self.options = options ? options : {};
-    self.currentEvents = [];
 
     // TODO: make this range configurable, even if not required
     self.dayRangeStart = moment().hours(9).minutes(0);
@@ -18,7 +15,7 @@ var DayView = function DayView(options) {
     // positioning of elements
     self.dayRangeDiffInMs = self.dayRangeStart.diff(self.dayRangeEnd);
 
-    // expect a non empty jQuery object
+    // expect a non empty jQuery object to setup day view
     if (!(self.options.view instanceof $)) {
         // TODO: display some visual error, even if not required
         console.error('tried to instantiate without proper view');
@@ -43,16 +40,14 @@ var DayView = function DayView(options) {
 DayView.prototype._initView = function _initView() {
     var currentTime, self = this;
 
+    // TODO: should probably break this label setu into a separate function
     // clone a moment at the set dayRangeStart
     currentTime = moment(self.dayRangeStart);
 
     // build our time labels and position accordingly
     while(!(currentTime.isAfter(self.dayRangeEnd))) {
-        var labelEl, percentageFromTop;
-
-        labelEl = $('<div class="time-label"></div>');
+        var labelEl = $('<div class="time-label"></div>');
         labelEl.text(currentTime.format('h:mm'));
-
         labelEl.css('top', self._calculatePercentageInDayRange(currentTime) + '%');
 
         if(currentTime.minutes() === 0) {
@@ -129,15 +124,12 @@ DayView.prototype.renderEvents = function renderEvents(events) {
     // clear out any current events
     self._clearEvents();
 
-    // using lodash's sortBy, to make sure our events are in order
-    // this is essentially just a wrapper for Array.prototype.sort, with a sort
-    // function equivalent to function(a,b) { return a.start - b.start}
-    _.sortBy(events, 'start');
-    console.log(events);
+    var sortedEvents = events.sort(self._compareEvents('start'));
+    console.log(sortedEvents);
     eventsCount = events.length;
 
     for(var i = 0; i < eventsCount; ++i) {
-        self._positionEvent(events[i]);
+        self._positionEvent(sortedEvents[i]);
     }
 };
 
@@ -147,6 +139,22 @@ DayView.prototype.renderEvents = function renderEvents(events) {
 DayView.prototype._clearEvents = function _clearEvents() {
     var self = this;
     self.eventsEl.empty();
+};
+
+/**
+ * this is a generic comparitor for sorting the calendar event objects
+ * @param {string} property
+ */
+DayView.prototype._compareEvents = function _compareEvents(property) {
+    return function(a,b) {
+        if (a[property] > b[property]) {
+            return 1;
+        }
+        if (a[property] < b[property]) {
+            return -1;
+        }
+        return 0;
+    };
 };
 
 
