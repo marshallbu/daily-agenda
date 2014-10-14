@@ -1,7 +1,11 @@
 var $ = require('jquery'),
+    _ = require('lodash'),
     moment = require('moment'),
     dayViewEventsTemplate = require('../partials/day-view-events.html');
     eventItemTemplate = require('../partials/event-item.html');
+
+    var intervals = require('interval-query');
+    var tree = new intervals.SegmentTree();
 
 var DayView = function DayView(options) {
     var self = this;
@@ -128,9 +132,63 @@ DayView.prototype.renderEvents = function renderEvents(events) {
     // console.log(sortedEvents);
     eventsCount = events.length;
 
+    console.log(self._processEvents(events));
+
     for(var i = 0; i < eventsCount; ++i) {
         self._positionEvent(sortedEvents[i]);
     }
+};
+
+/**
+ * Takes in a sorted list of events, and processes the events in to separate
+ * buckets based on overlaps
+ * @param {array} events
+ */
+DayView.prototype._processEvents = function _processEvents(events) {
+    var self = this;
+    // var eventsCount = events.length, eventBuckets = [], bucketCount, overlaps, foundBucket, foundBucketIndex;
+    //
+    // // initialize the buckets array by adding the first element in an empty bucket
+    // eventBuckets.push( [{ eventIndex: 0, overlaps: 0 }] );
+    //
+    // for(var i = 1; i < eventsCount; ++i) {
+    //     bucketCount = eventBuckets.length;
+    //     overlaps = 0;
+    //     foundBucket = false;
+    //     foundBucketIndex = 0;
+    //
+    //     // check the last event in each bucket to see if it overlaps
+    //     for(var bIndex = 0; bIndex < bucketCount; ++bIndex) {
+    //         var bucket = eventBuckets[bIndex];
+    //         var eventIndex = bucket[bucket.length-1].eventIndex;
+    //
+    //         // add to current bucket if start is greater than/equal last item's end
+    //         if(events[i].start >= events[eventIndex].end) {
+    //             bucket.push({ eventIndex: i, overlaps: overlaps});
+    //             foundBucket = true;
+    //             foundBucketIndex = bIndex;
+    //         } else {
+    //             bucket[bucket.length-1].overlaps++;
+    //             overlaps++;
+    //         }
+    //     }
+    //
+    //     if(!foundBucket) {
+    //         eventBuckets.push( [{ eventIndex: i, overlaps: 0 }] );
+    //     } else {
+    //         var theBucket = eventBuckets[foundBucketIndex];
+    //         theBucket[theBucket.length-1].overlaps = overlaps;
+    //     }
+    // }
+    //
+    // return eventBuckets;
+
+    for(var i = 0; i < events.length; ++i) {
+        tree.pushInterval(events[i].start, events[i].end);
+    }
+    tree.buildTree();
+
+    console.log(tree.queryOverlap());
 };
 
 /**
