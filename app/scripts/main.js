@@ -1,8 +1,8 @@
 var $ = require('jquery'),
-    moment = require('moment'),
+    logger = require('modules/logger'),
     DayView = require('day-view');
 
-(function($, DayView) {
+(function($, logger, DayView) {
     var viewContainer = $('div.calendar-view');
 
     if (viewContainer.length > 0) {
@@ -16,8 +16,8 @@ var $ = require('jquery'),
         window.layOutDay = function(events) {
             myDayView.renderEvents(events);
         };
-        
+
     } else {
-        console.error('No div.calendar-view in HTML!');
+        logger.error('No div.calendar-view in HTML!');
     }
-}($, DayView));
+}($, logger, DayView));

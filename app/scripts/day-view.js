@@ -1,12 +1,15 @@
 var $ = require('jquery'),
     _ = require('lodash'),
+    logger = require('modules/logger'),
     moment = require('moment'),
+    intervalQuery = require('interval-query'),
     dayViewEventsTemplate = require('../partials/day-view-events.html');
     eventItemTemplate = require('../partials/event-item.html');
 
-    var intervals = require('interval-query');
-    var tree = new intervals.SegmentTree();
-
+/**
+ * DayView
+ * @param {object} options
+ */
 var DayView = function DayView(options) {
     var self = this;
     self.options = options ? options : {};
@@ -19,16 +22,25 @@ var DayView = function DayView(options) {
     // positioning of elements
     self.dayRangeDiffInMs = self.dayRangeStart.diff(self.dayRangeEnd);
 
+    // Keep an array of hashes of what's in each display column, so we know how
+    // to position things properly.
+    // We'll start off with one column since we know there will be at least one
+    self.columns = [{}];
+
+    // set up our internal interval/segment tree
+    self.tree = new intervalQuery.SegmentTree();
+    self.intervals = [];
+
     // expect a non empty jQuery object to setup day view
     if (!(self.options.view instanceof $)) {
         // TODO: display some visual error, even if not required
-        console.error('tried to instantiate without proper view');
+        logger.error('tried to instantiate without proper view');
     } else {
         self.view = self.options.view;
 
         // initialize our DOM partials, keep a reference to them
         self.eventsTemplate = $(dayViewEventsTemplate);
-        self.eventsEl = self.eventsTemplate.find('.events');
+        self.eventsEl = self.eventsTemplate.find('.events').hide();
 
         // initialize the view
         self._initView();
@@ -77,6 +89,7 @@ DayView.prototype._initView = function _initView() {
  * dayRangeEnd.
  *
  * @param {moment} time a moment object set to a specific time
+ * @param {string} direction
  */
 DayView.prototype._calculatePercentageInDayRange = function _calculatePercentageInDayRange(time, direction) {
     var diff, self = this;
@@ -93,23 +106,26 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
 };
 
 /**
- * This function takes in an event object {start: Number, end: Number}, creates
+ * This function takes in an interval(event) object, creates
  * a DOM element and positions it in the view.
- * @param {object} event {start: Number, end: Number}
+ * @param {object} event {from: Number, to: Number, id: Number, overlap: Array}
  */
 DayView.prototype._positionEvent = function _positionEvent(event) {
     var eventItemEl, eventTime, percentageFromTop, self = this;
 
+    // for the event of data coming in on each event, you could use the following
+    // to dynamically compile templates for each
     eventItemEl = $(eventItemTemplate);
+    eventItemEl.attr('id', 'event' + event.id.toString());
     eventItemEl.find('.title').text('Sample Item');
     eventItemEl.find('.location').text('Sample Location');
 
     // add the amount of minutes from our event to the dayRangeStart to get the
     // event time
-    eventStart = moment(self.dayRangeStart).add(event.start, 'm');
-    eventEnd = moment(self.dayRangeStart).add(event.end, 'm');
+    eventStart = moment(self.dayRangeStart).add(event.from, 'm');
+    eventEnd = moment(self.dayRangeStart).add(event.to, 'm');
 
-    // position the event based on it's time
+    // since there are no overlaps, take up full space
     eventItemEl.css('top', self._calculatePercentageInDayRange(eventStart) + '%');
     eventItemEl.css('bottom', self._calculatePercentageInDayRange(eventEnd, 'bottom') + '%');
 
@@ -123,72 +139,100 @@ DayView.prototype._positionEvent = function _positionEvent(event) {
  * @param {array} events an array of objects in the format {start: Number, end: Number}
  */
 DayView.prototype.renderEvents = function renderEvents(events) {
-    var eventsCount, self = this;
+    var iCount, intervals, sortedEvents, self = this;
 
     // clear out any current events
     self._clearEvents();
 
-    var sortedEvents = events.sort(self._compareEvents('start'));
-    // console.log(sortedEvents);
-    eventsCount = events.length;
+    // sort the events by start time
+    sortedEvents = events.sort(self._compareEvents('start'));
 
-    console.log(self._processEvents(events));
+    // process the event information for layout
+    self._processEvents(sortedEvents);
 
-    for(var i = 0; i < eventsCount; ++i) {
-        self._positionEvent(sortedEvents[i]);
+    // let's loop through our structures and display some events
+    // first, let's just add our all items to the display
+    iCount = self.intervals.length;
+    for(var i = 0; i < iCount; ++i) {
+        self._positionEvent(self.intervals[i]);
     }
+
+    // next, let's adjust events positioning to make sure they are properly aligned
+    // to the column they should be in
+    //
+    // var cCount = self.columns.length;
+    // for (var i = 0; i < cCount; ++i) {
+    //
+    //
+    //
+    // }
+
+
+    logger.info(self.columns);
+
+    // show the events
+    self.eventsEl.show();
 };
 
 /**
- * Takes in a sorted list of events, and processes the events in to separate
- * buckets based on overlaps
+ * Takes in a sorted list of events, and processes the events into the internal
+ * segment(interval) tree
  * @param {array} events
  */
 DayView.prototype._processEvents = function _processEvents(events) {
-    var self = this;
-    // var eventsCount = events.length, eventBuckets = [], bucketCount, overlaps, foundBucket, foundBucketIndex;
-    //
-    // // initialize the buckets array by adding the first element in an empty bucket
-    // eventBuckets.push( [{ eventIndex: 0, overlaps: 0 }] );
-    //
-    // for(var i = 1; i < eventsCount; ++i) {
-    //     bucketCount = eventBuckets.length;
-    //     overlaps = 0;
-    //     foundBucket = false;
-    //     foundBucketIndex = 0;
-    //
-    //     // check the last event in each bucket to see if it overlaps
-    //     for(var bIndex = 0; bIndex < bucketCount; ++bIndex) {
-    //         var bucket = eventBuckets[bIndex];
-    //         var eventIndex = bucket[bucket.length-1].eventIndex;
-    //
-    //         // add to current bucket if start is greater than/equal last item's end
-    //         if(events[i].start >= events[eventIndex].end) {
-    //             bucket.push({ eventIndex: i, overlaps: overlaps});
-    //             foundBucket = true;
-    //             foundBucketIndex = bIndex;
-    //         } else {
-    //             bucket[bucket.length-1].overlaps++;
-    //             overlaps++;
-    //         }
-    //     }
-    //
-    //     if(!foundBucket) {
-    //         eventBuckets.push( [{ eventIndex: i, overlaps: 0 }] );
-    //     } else {
-    //         var theBucket = eventBuckets[foundBucketIndex];
-    //         theBucket[theBucket.length-1].overlaps = overlaps;
-    //     }
-    // }
-    //
-    // return eventBuckets;
+    var eCount = events.length, iCount, self = this;
 
-    for(var i = 0; i < events.length; ++i) {
-        tree.pushInterval(events[i].start, events[i].end);
+    for(var eIndex = 0; eIndex < eCount; ++eIndex) {
+        self.tree.pushInterval(events[eIndex].start, events[eIndex].end);
     }
-    tree.buildTree();
+    self.tree.buildTree();
 
-    console.log(tree.queryOverlap());
+    // get the intervals and overlap info from the tree
+    self.intervals = self.tree.queryOverlap();
+    iCount = self.intervals.length;
+    logger.info(self.intervals);
+
+    // build a column structure so we know how to position events properly
+    // since there are overlaps, throw it in the column where it doesn't overlap
+
+    for(var intervalIndex = 0; intervalIndex < iCount; ++intervalIndex) {
+        var interval = self.intervals[intervalIndex];
+        var currentColumn = 0;
+        var cCount = self.columns.length;
+        var inserted = false;
+
+
+        while (!inserted) {
+            var hasOverlaps = false;
+
+            // if currentColumn doesn't exist, obviously we got to a point where
+            // we need to create a new column and add the item
+
+            if (currentColumn > cCount-1) {
+                self.columns.push({});
+                self.columns[currentColumn][interval.id.toString()] = true;
+                inserted = true;
+            } else {
+                // check if any overlaps exist in this column
+                var oCount = interval.overlap.length;
+                for (var k = 0; k < oCount; ++k) {
+                    // check to see if column contains any of this events overlaps
+                    if(self.columns[currentColumn].hasOwnProperty(interval.overlap[k].toString())) {
+                        hasOverlaps = true;
+                        break;
+                    }
+                }
+
+                if(!hasOverlaps) {
+                    self.columns[currentColumn][interval.id.toString()] = true;
+                    inserted = true;
+                } else {
+                    // no overlaps and no insertion, move to next column
+                    currentColumn++;
+                }
+            }
+        }
+    }
 };
 
 /**
@@ -196,11 +240,15 @@ DayView.prototype._processEvents = function _processEvents(events) {
  */
 DayView.prototype._clearEvents = function _clearEvents() {
     var self = this;
+    self.columns = [{}]; // garbage collect
+    self.intervals = []; // garbage collect
+    self.eventsEl.hide();
     self.eventsEl.empty();
+    self.tree.clearIntervalStack();
 };
 
 /**
- * this is a generic comparitor for sorting the calendar event objects
+ * this is a generic comparator for sorting the calendar event objects
  * @param {string} property
  */
 DayView.prototype._compareEvents = function _compareEvents(property) {
