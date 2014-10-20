@@ -14,7 +14,12 @@ var $ = require('jquery'),
 
         // provide window function to add event items
         window.layOutDay = function(events) {
-            myDayView.renderEvents(events);
+            if (events) {
+                myDayView.renderEvents(events);
+            } else {
+                logger.error('events can\'t be empty!!');
+            }
+
         };
 
     } else {

@@ -22,14 +22,14 @@ var DayView = function DayView(options) {
     // positioning of elements
     self.dayRangeDiffInMs = Math.abs(self.dayRangeStart.diff(self.dayRangeEnd));
 
-    // after playing with more data, I realized that overlaps should be in their
-    // own group/cluster, so you can use a uniform amount of columns to chop them
-    // all up.  So intead, let's make an array of these groups.
-    self.overlapGroups = [];
-
     // set up our internal interval/segment tree
     self.tree = new intervalQuery.SegmentTree();
     self.intervals = [];
+
+    // after playing with more data, I realized that overlaps should be in their
+    // own group/cluster, so you can use a uniform amount of columns to chop them
+    // all up per group.  So intead, let's make an array of these groups.
+    self.overlapGroups = [];
 
     // expect a non empty jQuery object to setup day view
     if (!(self.options.view instanceof $)) {
@@ -56,23 +56,23 @@ var DayView = function DayView(options) {
 DayView.prototype._initView = function _initView() {
     var currentTime, self = this;
 
-    // TODO: should probably break this label setu into a separate function
+    // TODO: should probably break this label setup into a separate function
     // clone a moment at the set dayRangeStart
     currentTime = moment(self.dayRangeStart);
 
     // build our time labels and position accordingly
     while(!(currentTime.isAfter(self.dayRangeEnd))) {
-        var labelEl = $('<div class="time-label"></div>');
-        labelEl.text(currentTime.format('h:mm'));
-        labelEl.css('top', self._calculatePercentageInDayRange(currentTime) + '%');
+        var $labelEl = $('<div class="time-label"></div>');
+        $labelEl.text(currentTime.format('h:mm'));
+        $labelEl.css('top', self._calculatePercentageInDayRange(currentTime) + '%');
 
         if(currentTime.minutes() === 0) {
-            labelEl.addClass('top-of-hour');
-            labelEl.append($('<span class="meridiem">').text(currentTime.format('A')));
+            $labelEl.addClass('top-of-hour');
+            $labelEl.append($('<span class="meridiem">').text(currentTime.format('A')));
         }
 
         // attach to the labels template
-        self.$eventsTemplate.append(labelEl);
+        self.$eventsTemplate.append($labelEl);
 
         // advance our time 30 minutes, assuming that our range started/ended on
         // the top or middle of the hour
@@ -107,7 +107,7 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
 
 /**
  * This function takes in an interval(event) object, creates
- * a DOM element and positions it in the view.
+ * a DOM element and positions it in the view (VERTICALLY).
  * @param {object} event {from: Number, to: Number, id: Number, overlap: Array}
  */
 DayView.prototype._positionEvent = function _positionEvent(event) {
@@ -133,11 +133,14 @@ DayView.prototype._positionEvent = function _positionEvent(event) {
     self.$eventsEl.append($eventItemEl);
 };
 
+/**
+ * remove overlaps by adjusting elements position.left and position.right accordingly
+ */
 DayView.prototype._removeOverlaps = function _removeOverlaps() {
     var self = this;
 
     _.forEach(self.overlapGroups, function(group) {
-        var sortedMembers;
+        var sortedMembers, membersTouched = {};
 
         // only process columns for groups with more than one item
         if (_.size(group.members) > 1) {
@@ -148,7 +151,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
                                     .value();
 
             // position left/right based on column/total columns, from right to
-            // left
+            // left, essentially pushing items to the left as necessary
             _.forEachRight(sortedMembers, function(member, index) {
                 var elLeft, overlap;
 
@@ -163,12 +166,18 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
                 // position
                 $('#event' + member.id).css('left', elLeft + '%');
 
+                // consider this member touched, so we don't step backwards whilst
+                // pushing columns to the left
+                membersTouched[member.id] = true;
+
                 // if it overlaps with other events, position their right with this
                 // $el's left
                 overlap = self.intervals[member.id].overlap;
                 if (overlap.length > 0) {
                     _.forEachRight(overlap, function(overlapId) {
-                        $('#event' + overlapId).css('right', Math.abs(elLeft - 100) + '%');
+                        if(!membersTouched[overlapId]) {
+                                $('#event' + overlapId).css('right', Math.abs(elLeft - 100) + '%');
+                        }
                     });
                 }
             });
@@ -225,7 +234,7 @@ DayView.prototype._processEvents = function _processEvents(events) {
     // get the intervals and overlap info from the tree
     // self.intervals = self.tree.queryOverlap();
     // CHANGED: use my own queries so I can remove endpoint overlaps in search,
-    // this creating my own interval data
+    // as most calendars don't consider 2-3pm and 3-4pm overlaping.
     _.forEach(events, function(event, index) {
         self.tree.queryInterval(event.start, event.end, { endpoints: false, resultFn: function(results) {
             self.intervals.push({
@@ -233,7 +242,7 @@ DayView.prototype._processEvents = function _processEvents(events) {
                 to: event.end,
                 id: index,
                 overlap: _.chain(results)
-                            .reject({'id': index})
+                            .reject({'id': index}) // get rid of the interval from search
                             .pluck('id')
                             .value()
             });
@@ -269,14 +278,12 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
         // add to it's own group if there are no overlaps
         if (interval.overlap.length === 0) {
             self.overlapGroups.push(self._createGroup(interval));
-            inserted = true;
         } else {
             // check to see if interval's overlap should be part of existing group
             _.forEach(self.overlapGroups, function(group) {
 
                 // check current group for overlap
                 _.forEach(interval.overlap, function(intervalId) {
-                    // if(_.contains(group.members, intervalId)) {
                     if (group.members[intervalId]) {
                         group.members[interval.id] = {
                             column: 0
@@ -287,7 +294,7 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
                 });
 
                 if(inserted) {
-                    return false; // break out of forOwn
+                    return false; // break out of forEach
                 }
             });
 
@@ -299,14 +306,14 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
         }
     });
 
-
     // create columns in the groups now that everything is grouped
+    // TODO: own function?
     _.forEach(self.overlapGroups, function(group) {
         var keys, curCol, tempColumns = [[]];
 
         // only create columns for groups with more than one item
         if (_.size(group.members) > 1) {
-            logger.info('creating columns');
+            // logger.info('creating columns');
             keys = _.keys(group.members);
             keys = keys.sort(); // guarantee order on diff platforms
 
@@ -319,7 +326,7 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
                 while (true) {
                     // new column should be created
                     if (curCol >= tempColumns.length) {
-                        logger.info('new column');
+                        // logger.info('new column');
                         tempColumns.push([keys[i]]);
                         group.members[keys[i]].column = curCol;
                         group.columns++;
@@ -333,9 +340,12 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
                             curCol++;
                         }
                     }
-                }
-            }
+                } // while
+
+            } // for
+
         }
+
     });
 
 };
