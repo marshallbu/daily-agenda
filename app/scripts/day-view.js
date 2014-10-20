@@ -337,8 +337,12 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
                         break;
                     } else { // add to existing column or move to next
                         // check interval against last item in current column
+                        // logger.info(tempColumns);
+                        // logger.info('current interval', intervals[keys[i]]);
+                        // logger.info('checking against', intervals[_.last(tempColumns[curCol])]);
                         if (intervals[_.last(tempColumns[curCol])].to <= intervals[keys[i]].from) {
                             tempColumns[curCol].push(keys[i]);
+                            group.members[keys[i]].column = curCol;
                             break;
                         } else {
                             curCol++;
