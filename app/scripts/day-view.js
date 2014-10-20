@@ -272,6 +272,8 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
     //     columns: 1 // total number of columns for this group
     // };
 
+    // TODO: this probably can be in a different function and compressed down
+    // to the interval querying in _processEvents
     _.forEach(intervals, function(interval) {
         var group, inserted = false;
 

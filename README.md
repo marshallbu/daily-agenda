@@ -40,4 +40,5 @@ var mock = [
 ## TODOs
 - unit/performance tests
 - getting rid of external deps (3rd party)
-- compressing JS
+- compressing/uglifying JS
+- looking for ways to do work with less/more compact code
