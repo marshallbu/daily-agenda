@@ -36,11 +36,11 @@ var DayView = function DayView(options) {
         // TODO: display some visual error, even if not required
         logger.error('tried to instantiate without proper view');
     } else {
-        self.view = self.options.view;
+        self.$view = self.options.view;
 
         // initialize our DOM partials, keep a reference to them
-        self.eventsTemplate = $(dayViewEventsTemplate);
-        self.eventsEl = self.eventsTemplate.find('.events').hide();
+        self.$eventsTemplate = $(dayViewEventsTemplate);
+        self.$eventsEl = self.$eventsTemplate.find('.events').hide();
 
         // initialize the view
         self._initView();
@@ -72,7 +72,7 @@ DayView.prototype._initView = function _initView() {
         }
 
         // attach to the labels template
-        self.eventsTemplate.append(labelEl);
+        self.$eventsTemplate.append(labelEl);
 
         // advance our time 30 minutes, assuming that our range started/ended on
         // the top or middle of the hour
@@ -80,7 +80,7 @@ DayView.prototype._initView = function _initView() {
     }
 
     // append the view templates to the view
-    self.view.append(self.eventsTemplate);
+    self.$view.append(self.$eventsTemplate);
 };
 
 /**
@@ -111,14 +111,14 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
  * @param {object} event {from: Number, to: Number, id: Number, overlap: Array}
  */
 DayView.prototype._positionEvent = function _positionEvent(event) {
-    var eventItemEl, eventTime, percentageFromTop, self = this;
+    var $eventItemEl, eventTime, percentageFromTop, self = this;
 
     // for the event of data coming in on each event, you could use the following
     // to dynamically compile templates for each
-    eventItemEl = $(eventItemTemplate);
-    eventItemEl.attr('id', 'event' + event.id.toString());
-    eventItemEl.find('.title').text('Sample Item');
-    eventItemEl.find('.location').text('Sample Location');
+    $eventItemEl = $(eventItemTemplate);
+    $eventItemEl.attr('id', 'event' + event.id.toString());
+    $eventItemEl.find('.title').text('Sample Item');
+    $eventItemEl.find('.location').text('Sample Location');
 
     // add the amount of minutes from our event to the dayRangeStart to get the
     // event time
@@ -126,15 +126,28 @@ DayView.prototype._positionEvent = function _positionEvent(event) {
     eventEnd = moment(self.dayRangeStart).add(event.to, 'm');
 
     // since there are no overlaps, take up full space
-    eventItemEl.css('top', self._calculatePercentageInDayRange(eventStart) + '%');
-    eventItemEl.css('bottom', self._calculatePercentageInDayRange(eventEnd, 'bottom') + '%');
+    $eventItemEl.css('top', self._calculatePercentageInDayRange(eventStart) + '%');
+    $eventItemEl.css('bottom', self._calculatePercentageInDayRange(eventEnd, 'bottom') + '%');
 
     // add the event to the events container
-    self.eventsEl.append(eventItemEl);
+    self.$eventsEl.append($eventItemEl);
 };
 
 DayView.prototype._removeOverlaps = function _removeOverlaps() {
 
+    _.forEach(self.overlapGroups, function(group) {
+        var keys, curCol, tempColumns = [[]];
+
+        // only process columns for groups with more than one item
+        if (_.size(group.members) > 1) {
+
+            _.forEach(group.members, function(member, key) {
+                var $el = $('#event' + key);
+
+
+            });
+        }
+    });
 };
 
 /**
@@ -153,8 +166,8 @@ DayView.prototype.renderEvents = function renderEvents(events) {
 
     // process the event information for layout
     self._processEvents(sortedEvents);
-    logger.info(self.intervals);
-    logger.info(self.overlapGroups);
+    logger.info('intervals', self.intervals);
+    logger.info('groups', self.overlapGroups);
 
     // let's loop through our structures and display some events
     // first, let's just add our all items to the display
@@ -167,7 +180,7 @@ DayView.prototype.renderEvents = function renderEvents(events) {
     self._removeOverlaps();
 
     // show the events
-    self.eventsEl.show();
+    self.$eventsEl.show();
 };
 
 /**
@@ -184,7 +197,22 @@ DayView.prototype._processEvents = function _processEvents(events) {
     self.tree.buildTree();
 
     // get the intervals and overlap info from the tree
-    self.intervals = self.tree.queryOverlap();
+    // self.intervals = self.tree.queryOverlap();
+    // CHANGED: use my own queries so I can remove endpoint overlaps in search,
+    // this creating my own interval data
+    _.forEach(events, function(event, index) {
+        self.tree.queryInterval(event.start, event.end, { endpoints: false, resultFn: function(results) {
+            self.intervals.push({
+                from: event.start,
+                to: event.end,
+                id: index,
+                overlap: _.chain(results)
+                            .reject({'id': index})
+                            .pluck('id')
+                            .value()
+            });
+        }});
+    });
 
     // group the intervals
     self._groupIntervals(self.intervals);
@@ -312,8 +340,8 @@ DayView.prototype._clearEvents = function _clearEvents() {
     var self = this;
     self.overlapGroups = []; // garbage collect
     self.intervals = []; // garbage collect
-    self.eventsEl.hide();
-    self.eventsEl.empty();
+    self.$eventsEl.hide();
+    self.$eventsEl.empty();
     self.tree.clearIntervalStack();
 };
 
