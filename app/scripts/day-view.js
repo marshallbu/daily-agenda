@@ -134,17 +134,43 @@ DayView.prototype._positionEvent = function _positionEvent(event) {
 };
 
 DayView.prototype._removeOverlaps = function _removeOverlaps() {
+    var self = this;
 
     _.forEach(self.overlapGroups, function(group) {
-        var keys, curCol, tempColumns = [[]];
+        var sortedMembers;
 
         // only process columns for groups with more than one item
         if (_.size(group.members) > 1) {
+            // get a sorted list of members based on the column they are in
+            sortedMembers = _.chain(group.members)
+                                    .map(function(member, index) { return { id: index, column: member.column }; })
+                                    .sortBy('column')
+                                    .value();
 
-            _.forEach(group.members, function(member, key) {
-                var $el = $('#event' + key);
+            // position left/right based on column/total columns, from right to
+            // left
+            _.forEachRight(sortedMembers, function(member, index) {
+                var elLeft, overlap;
 
+                // if we are on column 0, we should never have to touch these
+                // moving right to left, asthey will already have been positioned
+                if (member.column === 0) {
+                    return true;
+                }
 
+                elLeft = parseFloat((member.column / group.columns) * 100);
+
+                // position
+                $('#event' + member.id).css('left', elLeft + '%');
+
+                // if it overlaps with other events, position their right with this
+                // $el's left
+                overlap = self.intervals[member.id].overlap;
+                if (overlap.length > 0) {
+                    _.forEachRight(overlap, function(overlapId) {
+                        $('#event' + overlapId).css('right', Math.abs(elLeft - 100) + '%');
+                    });
+                }
             });
         }
     });
