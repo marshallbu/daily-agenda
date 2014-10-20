@@ -20,12 +20,12 @@ var DayView = function DayView(options) {
 
     // get the difference between the start and end time, for use in precise
     // positioning of elements
-    self.dayRangeDiffInMs = self.dayRangeStart.diff(self.dayRangeEnd);
+    self.dayRangeDiffInMs = Math.abs(self.dayRangeStart.diff(self.dayRangeEnd));
 
-    // Keep an array of hashes of what's in each display column, so we know how
-    // to position things properly.
-    // We'll start off with one column since we know there will be at least one
-    self.columns = [{}];
+    // after playing with more data, I realized that overlaps should be in their
+    // own group/cluster, so you can use a uniform amount of columns to chop them
+    // all up.  So intead, let's make an array of these groups.
+    self.overlapGroups = [];
 
     // set up our internal interval/segment tree
     self.tree = new intervalQuery.SegmentTree();
@@ -95,7 +95,7 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
     var diff, self = this;
     direction = direction || 'top'; // percentage from top or bottom of range
 
-    diff = parseFloat(self.dayRangeStart.diff(time) / self.dayRangeDiffInMs);
+    diff = Math.abs(parseFloat(self.dayRangeStart.diff(time) / self.dayRangeDiffInMs));
 
     if (direction === 'bottom') {
         // subtract from 100 to get percentage from bottom
@@ -133,13 +133,17 @@ DayView.prototype._positionEvent = function _positionEvent(event) {
     self.eventsEl.append(eventItemEl);
 };
 
+DayView.prototype._removeOverlaps = function _removeOverlaps() {
+
+};
+
 /**
  * This function takes in an array of event objects {start: Number, end: Number},
  * and renders them to the view.
  * @param {array} events an array of objects in the format {start: Number, end: Number}
  */
 DayView.prototype.renderEvents = function renderEvents(events) {
-    var iCount, intervals, sortedEvents, self = this;
+    var iCount, cCount, intervals, sortedEvents, self = this;
 
     // clear out any current events
     self._clearEvents();
@@ -149,6 +153,8 @@ DayView.prototype.renderEvents = function renderEvents(events) {
 
     // process the event information for layout
     self._processEvents(sortedEvents);
+    logger.info(self.intervals);
+    logger.info(self.overlapGroups);
 
     // let's loop through our structures and display some events
     // first, let's just add our all items to the display
@@ -157,18 +163,8 @@ DayView.prototype.renderEvents = function renderEvents(events) {
         self._positionEvent(self.intervals[i]);
     }
 
-    // next, let's adjust events positioning to make sure they are properly aligned
-    // to the column they should be in
-    //
-    // var cCount = self.columns.length;
-    // for (var i = 0; i < cCount; ++i) {
-    //
-    //
-    //
-    // }
-
-
-    logger.info(self.columns);
+    // and fix overlaps in display based on grouping information
+    self._removeOverlaps();
 
     // show the events
     self.eventsEl.show();
@@ -189,50 +185,124 @@ DayView.prototype._processEvents = function _processEvents(events) {
 
     // get the intervals and overlap info from the tree
     self.intervals = self.tree.queryOverlap();
-    iCount = self.intervals.length;
-    logger.info(self.intervals);
 
-    // build a column structure so we know how to position events properly
-    // since there are overlaps, throw it in the column where it doesn't overlap
+    // group the intervals
+    self._groupIntervals(self.intervals);
+};
 
-    for(var intervalIndex = 0; intervalIndex < iCount; ++intervalIndex) {
-        var interval = self.intervals[intervalIndex];
-        var currentColumn = 0;
-        var cCount = self.columns.length;
-        var inserted = false;
+/**
+ * Groups intervals and creates column information within each group for CSS
+ * generation.
+ */
+DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
+    var self = this;
+    // CHANGED: changed this to create a group structure to keep common overlapping
+    // info amongst clusters of events.
+    // Each group will look like:
+    //
+    // var group = {
+    //     members: {
+    //         0: { // the key is the interval id for quick lookup
+    //             column: 0 // the column the member belongs in
+    //         }
+    //     },
+    //     columns: 1 // total number of columns for this group
+    // };
 
+    _.forEach(intervals, function(interval) {
+        var group, inserted = false;
 
-        while (!inserted) {
-            var hasOverlaps = false;
+        // add to it's own group if there are no overlaps
+        if (interval.overlap.length === 0) {
+            self.overlapGroups.push(self._createGroup(interval));
+            inserted = true;
+        } else {
+            // check to see if interval's overlap should be part of existing group
+            _.forEach(self.overlapGroups, function(group) {
 
-            // if currentColumn doesn't exist, obviously we got to a point where
-            // we need to create a new column and add the item
-
-            if (currentColumn > cCount-1) {
-                self.columns.push({});
-                self.columns[currentColumn][interval.id.toString()] = true;
-                inserted = true;
-            } else {
-                // check if any overlaps exist in this column
-                var oCount = interval.overlap.length;
-                for (var k = 0; k < oCount; ++k) {
-                    // check to see if column contains any of this events overlaps
-                    if(self.columns[currentColumn].hasOwnProperty(interval.overlap[k].toString())) {
-                        hasOverlaps = true;
-                        break;
+                // check current group for overlap
+                _.forEach(interval.overlap, function(intervalId) {
+                    // if(_.contains(group.members, intervalId)) {
+                    if (group.members[intervalId]) {
+                        group.members[interval.id] = {
+                            column: 0
+                        };
+                        inserted = true;
+                        return false; // break out of forEach
                     }
-                }
+                });
 
-                if(!hasOverlaps) {
-                    self.columns[currentColumn][interval.id.toString()] = true;
-                    inserted = true;
-                } else {
-                    // no overlaps and no insertion, move to next column
-                    currentColumn++;
+                if(inserted) {
+                    return false; // break out of forOwn
+                }
+            });
+
+            // if you didn't insert into an existing group, create a new one
+            if (!inserted) {
+                self.overlapGroups.push(self._createGroup(interval));
+                inserted = true;
+            }
+        }
+    });
+
+
+    // create columns in the groups now that everything is grouped
+    _.forEach(self.overlapGroups, function(group) {
+        var keys, curCol, tempColumns = [[]];
+
+        // only create columns for groups with more than one item
+        if (_.size(group.members) > 1) {
+            logger.info('creating columns');
+            keys = _.keys(group.members);
+            keys = keys.sort(); // guarantee order on diff platforms
+
+            // stick first key in first column
+            tempColumns[0][0] = keys[0];
+
+            for (var i = 1; i < keys.length; ++i) {
+                curCol = 0;
+
+                while (true) {
+                    // new column should be created
+                    if (curCol >= tempColumns.length) {
+                        logger.info('new column');
+                        tempColumns.push([keys[i]]);
+                        group.members[keys[i]].column = curCol;
+                        group.columns++;
+                        break;
+                    } else { // add to existing column or move to next
+                        // check interval against last item in current column
+                        if (intervals[_.last(tempColumns[curCol])].to <= intervals[keys[i]].from) {
+                            tempColumns[curCol].push(keys[i]);
+                            break;
+                        } else {
+                            curCol++;
+                        }
+                    }
                 }
             }
         }
+    });
+
+};
+
+/**
+ * creates a blank group, or one that is intialized with a given interval
+ * @param {[type]} interval [description]
+ */
+DayView.prototype._createGroup = function _createGroup(interval) {
+    var group = {
+        members: {},
+        columns: 1
+    };
+
+    if (interval) {
+        group.members[interval.id.toString()] = {
+            column: 0
+        };
     }
+
+    return group;
 };
 
 /**
@@ -240,7 +310,7 @@ DayView.prototype._processEvents = function _processEvents(events) {
  */
 DayView.prototype._clearEvents = function _clearEvents() {
     var self = this;
-    self.columns = [{}]; // garbage collect
+    self.overlapGroups = []; // garbage collect
     self.intervals = []; // garbage collect
     self.eventsEl.hide();
     self.eventsEl.empty();
