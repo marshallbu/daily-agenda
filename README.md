@@ -17,7 +17,7 @@ Build project is created under `dist` directory.
 - data is correct, meaning no malformed response from a service
 - not responsive (could easily change this since all positions are % based)
 - "infinite" overlapping, meaning all events could overlap, thus making 100 max columns in one group (chaos?)
-- sort events off start time, not both start and end
+- ~~sort events off start time, not both start and end~~ sorting on both now
 - example data as grokked from instructions:
 ```
 var mock = [
