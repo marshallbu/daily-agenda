@@ -197,7 +197,7 @@ DayView.prototype.renderEvents = function renderEvents(events) {
     self._clearEvents();
 
     // sort the events by start time
-    sortedEvents = events.sort(self._compareEvents('start'));
+    sortedEvents = events.sort(self._compareEvents());
 
     // process the event information for layout
     self._processEvents(sortedEvents);
@@ -310,14 +310,16 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
 
     // create columns in the groups now that everything is grouped
     // TODO: own function?
-    _.forEach(self.overlapGroups, function(group) {
+    _.forEach(self.overlapGroups, function(group, index) {
         var keys, curCol, tempColumns = [[]];
 
         // only create columns for groups with more than one item
         if (_.size(group.members) > 1) {
             // logger.info('creating columns');
             keys = _.keys(group.members);
-            keys = keys.sort(); // guarantee order on diff platforms
+            keys = keys.sort(function (a, b) {
+                return a - b; // make sure we are sorting by ints, not strings
+            }); // guarantee order on diff platforms
 
             // stick first key in first column
             tempColumns[0][0] = keys[0];
@@ -331,7 +333,7 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
                         // logger.info('new column');
                         tempColumns.push([keys[i]]);
                         group.members[keys[i]].column = curCol;
-                        group.columns++;
+                        group.columns = tempColumns.length;
                         break;
                     } else { // add to existing column or move to next
                         // check interval against last item in current column
@@ -387,12 +389,18 @@ DayView.prototype._clearEvents = function _clearEvents() {
  * this is a generic comparator for sorting the calendar event objects
  * @param {string} property
  */
-DayView.prototype._compareEvents = function _compareEvents(property) {
+DayView.prototype._compareEvents = function _compareEvents() {
     return function(a,b) {
-        if (a[property] > b[property]) {
+        if (a.start > b.start) {
             return 1;
         }
-        if (a[property] < b[property]) {
+        if (a.start < b.start) {
+            return -1;
+        }
+        if (a.end > b.end) {
+            return 1;
+        }
+        if (a.end < b.end) {
             return -1;
         }
         return 0;
