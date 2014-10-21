@@ -201,8 +201,8 @@ DayView.prototype.renderEvents = function renderEvents(events) {
 
     // process the event information for layout
     self._processEvents(sortedEvents);
-    logger.info('intervals', self.intervals);
-    logger.info('groups', self.overlapGroups);
+    logger.info('intervals:', self.intervals);
+    logger.info('groups:', self.overlapGroups);
 
     // let's loop through our structures and display some events
     // first, let's just add our all items to the display
@@ -231,6 +231,19 @@ DayView.prototype._processEvents = function _processEvents(events) {
     }
     self.tree.buildTree();
 
+    // create an interval array with with overlap information
+    self._processIntervals(events);
+
+    // group the intervals into clusters
+    self._groupIntervals();
+
+    // process the columns in each group
+    self._processGroupColumns();
+};
+
+DayView.prototype._processIntervals = function _processIntervals(events) {
+    var self = this;
+
     // get the intervals and overlap info from the tree
     // self.intervals = self.tree.queryOverlap();
     // CHANGED: use my own queries so I can remove endpoint overlaps in search,
@@ -248,17 +261,14 @@ DayView.prototype._processEvents = function _processEvents(events) {
             });
         }});
     });
-
-    // group the intervals
-    self._groupIntervals(self.intervals);
 };
 
 /**
- * Groups intervals and creates column information within each group for CSS
- * generation.
+ * Groups intervals into clusters of shared overlaps
  */
-DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
+DayView.prototype._groupIntervals = function _groupIntervals() {
     var self = this;
+
     // CHANGED: changed this to create a group structure to keep common overlapping
     // info amongst clusters of events.
     // Each group will look like:
@@ -271,10 +281,8 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
     //     },
     //     columns: 1 // total number of columns for this group
     // };
-
-    // TODO: this probably can be in a different function and compressed down
-    // to the interval querying in _processEvents
-    _.forEach(intervals, function(interval) {
+    
+    _.forEach(self.intervals, function(interval) {
         var group, inserted = false;
 
         // add to it's own group if there are no overlaps
@@ -307,9 +315,15 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
             }
         }
     });
+};
+
+/**
+ * process each group's column information
+ */
+DayView.prototype._processGroupColumns = function _processGroupColumns() {
+    var self = this;
 
     // create columns in the groups now that everything is grouped
-    // TODO: own function?
     _.forEach(self.overlapGroups, function(group, index) {
         var keys, curCol, tempColumns = [[]];
 
@@ -336,11 +350,9 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
                         group.columns = tempColumns.length;
                         break;
                     } else { // add to existing column or move to next
-                        // check interval against last item in current column
-                        // logger.info(tempColumns);
-                        // logger.info('current interval', intervals[keys[i]]);
-                        // logger.info('checking against', intervals[_.last(tempColumns[curCol])]);
-                        if (intervals[_.last(tempColumns[curCol])].to <= intervals[keys[i]].from) {
+                        // check interval against last item in current column,
+                        // making sure they don't overlap
+                        if (self.intervals[_.last(tempColumns[curCol])].to <= self.intervals[keys[i]].from) {
                             tempColumns[curCol].push(keys[i]);
                             group.members[keys[i]].column = curCol;
                             break;
@@ -355,7 +367,6 @@ DayView.prototype._groupIntervals = function _groupIntervals(intervals) {
         }
 
     });
-
 };
 
 /**
@@ -382,10 +393,10 @@ DayView.prototype._createGroup = function _createGroup(interval) {
  */
 DayView.prototype._clearEvents = function _clearEvents() {
     var self = this;
-    self.overlapGroups = []; // garbage collect
-    self.intervals = []; // garbage collect
     self.$eventsEl.hide();
     self.$eventsEl.empty();
+    self.overlapGroups = []; // garbage collect
+    self.intervals = []; // garbage collect
     self.tree.clearIntervalStack();
 };
 
