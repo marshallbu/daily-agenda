@@ -1,4 +1,5 @@
 @import (less) "../../../bower_modules/normalize.css/normalize.css";
+@import "mixins";
 
 // borrowed, I completely understand that setting the box-sizing on any element
 // to 'border-box', makes widths include the border and padding in the width
@@ -41,6 +42,7 @@ body {
 @fbBlue: #486fa4;
 @fbText: #292929;
 @fbMutedText: #999;
+@maxColumns: 100; // for the event of 100 max events that all overlap
 
 .box-shadow(@shadow) {
   -webkit-box-shadow: @shadow;
@@ -147,3 +149,6 @@ body {
         }
     }
 }
+
+// generate some column css
+.generate-columns(10);

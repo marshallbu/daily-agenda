@@ -281,7 +281,7 @@ DayView.prototype._groupIntervals = function _groupIntervals() {
     //     },
     //     columns: 1 // total number of columns for this group
     // };
-    
+
     _.forEach(self.intervals, function(interval) {
         var group, inserted = false;
 
@@ -393,7 +393,7 @@ DayView.prototype._createGroup = function _createGroup(interval) {
  */
 DayView.prototype._clearEvents = function _clearEvents() {
     var self = this;
-    self.$eventsEl.hide();
+    self.$eventsEl.hide(); // take it out of the render tree
     self.$eventsEl.empty();
     self.overlapGroups = []; // garbage collect
     self.intervals = []; // garbage collect

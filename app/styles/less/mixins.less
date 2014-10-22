@@ -1,0 +1,14 @@
+.generate-columns(@n, @i: 0) when (@i < @n) {
+
+    .columns-@{n} {
+        &.column-@{i}-start {
+            right: (@i * 100% / @n);
+        }
+
+        &.column-@{i}-end {
+            right: ((@i+1) * 100% / @n);
+        }
+    }
+
+    .generate-columns(@n, (@i + 1));
+}
