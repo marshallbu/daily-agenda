@@ -1,12 +1,18 @@
+/* .columns(@max, @i: 0) when (@i < @max) {
+    .columns(@i + 1);
+    .generate-columns(@i);
+} */
+
+// .c-N-s ~ .column-8-start, make these little to cut size down on CSS file
 .generate-columns(@n, @i: 0) when (@i < @n) {
 
-    .columns-@{n} {
-        &.column-@{i}-start {
-            right: (@i * 100% / @n);
+    div.c-@{n} {
+        &.c-@{i}-s {
+            left: (@i * 100% / @n) !important;
         }
 
-        &.column-@{i}-end {
-            right: ((@i+1) * 100% / @n);
+        &.c-@{i}-e {
+            right: 100 - ((@i+1) * 100% / @n) !important;
         }
     }
 
