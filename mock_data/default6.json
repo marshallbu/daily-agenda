@@ -90,5 +90,12 @@
     {"start": 180, "end": 200},
     {"start": 205, "end": 230},
     {"start": 180, "end": 240},
-    {"start": 180, "end": 200}
+    {"start": 180, "end": 200},
+    {"start": 610, "end": 670},
+    {"start": 310, "end": 370},
+    {"start": 410, "end": 470},
+    {"start": 610, "end": 670},
+    {"start": 310, "end": 370},
+    {"start": 410, "end": 470},
+    {"start": 0, "end": 10}
 ]

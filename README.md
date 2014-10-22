@@ -14,6 +14,7 @@ Build project is created under `dist` directory.
 
 ## Assumptions
 - don't care about text getting cut off (overflow: hidden, but this could be fixed my popups, or forcing some vertical overlap for sake of readability of event information)
+- visual spanning is based on columns needed in groups of clusters; there aren't sub groups inside of any groups that would make it more difficult to determine spanning
 - data is correct, meaning no malformed response from a service
 - not responsive (could easily change this since all positions are % based)
 - "infinite" overlapping, meaning all events could overlap, thus making 100 max columns in one group (chaos?)
@@ -41,4 +42,4 @@ var mock = [
 - unit/performance tests
 - getting rid of external deps (3rd party)
 - compressing/uglifying JS
-- looking for ways to do work with less/more compact code
+- looking for ways to do this with less or more compact code
