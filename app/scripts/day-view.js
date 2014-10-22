@@ -29,7 +29,7 @@ var DayView = function DayView(options) {
     // layout, and calculating it on the fly (as mentioned in columns.less).
     // Made this an option in the event of wanting to cut down on CSS size at the
     // exspensive of operations in JS.
-    self.options.cssColOptimizationMax = self.options.cssColOptimizationMax || 20;
+    self.options.cssColOptimizationMax = self.options.cssColOptimizationMax || 10;
 
     // TODO: make this range configurable, even if not required
     self.dayRangeStart = moment().hours(9).minutes(0);
@@ -157,7 +157,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
     var self = this;
 
     _.forEach(self.overlapGroups, function(group) {
-        var sortedMembers, membersTouched = {}, underCssOptMax;
+        var sortedMembers, membersTouched = {}, overCssOptMax;
 
         // only process columns for groups with more than one item
         if (_.size(group.members) > 1) {
@@ -166,7 +166,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
                                     .map(function(member, index) { return { id: index, column: member.column }; })
                                     .sortBy('column')
                                     .value();
-            underCssOptMax = group.columns < self.options.cssColOptimizationMax;
+            overCssOptMax = group.columns > self.options.cssColOptimizationMax;
 
             // position left/right based on column/total columns, from right to
             // left, essentially pushing items to the left as necessary
@@ -182,7 +182,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
                 // remove any previous column classes
                 $('#event' + member.id).removeClassPrefix('c-');
 
-                if (underCssOptMax) {
+                if (!overCssOptMax) {
                     // use predefined CSS
                     $('#event' + member.id).addClass('c-' + group.columns + ' ' +
                         'c-' + member.column + '-s ' +
@@ -206,7 +206,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
                             // remove any previous column classes
                             $('#event' + overlapId).removeClassPrefix('c-');
 
-                            if (underCssOptMax) {
+                            if (!overCssOptMax) {
                                 // use predefined CSS
                                 $('#event' + overlapId).addClass('c-' + group.columns + ' ' +
                                     'c-' + self.intervals[overlapId].column + '-s ' +
