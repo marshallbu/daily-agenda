@@ -3,16 +3,16 @@ var $ = require('jquery'),
     logger = require('modules/logger'),
     moment = require('moment'),
     intervalQuery = require('interval-query'),
-    dayViewEventsTemplate = require('../partials/day-view-events.html');
+    dayViewEventsTemplate = require('../partials/day-view-events.html'),
     eventItemTemplate = require('../partials/event-item.html');
 
 // setting up a jQuery mixin to help remove classes by prefix
 $.fn.removeClassPrefix = function(prefix) {
     this.each(function(i, el) {
-        var classes = el.className.split(" ").filter(function(c) {
+        var classes = el.className.split(' ').filter(function(c) {
             return c.lastIndexOf(prefix, 0) !== 0;
         });
-        el.className = classes.join(" ");
+        el.className = classes.join(' ');
     });
     return this;
 };
@@ -128,7 +128,7 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
  * @param {object} event {from: Number, to: Number, id: Number, overlap: Array}
  */
 DayView.prototype._positionEvent = function _positionEvent(event) {
-    var $eventItemEl, eventTime, percentageFromTop, self = this;
+    var $eventItemEl, eventStart, eventEnd, self = this;
 
     // for the event of data coming in on each event, you could use the following
     // to dynamically compile templates for each
@@ -170,7 +170,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
 
             // position left/right based on column/total columns, from right to
             // left, essentially pushing items to the left as necessary
-            _.forEachRight(sortedMembers, function(member, index) {
+            _.forEachRight(sortedMembers, function(member) {
                 var elLeft, overlap;
 
                 // if we are on column 0, we should never have to touch these
@@ -229,7 +229,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
  * @param {array} events an array of objects in the format {start: Number, end: Number}
  */
 DayView.prototype.renderEvents = function renderEvents(events) {
-    var iCount, cCount, intervals, sortedEvents, self = this;
+    var iCount, sortedEvents, self = this;
 
     // clear out any current events
     self._clearEvents();
@@ -262,7 +262,7 @@ DayView.prototype.renderEvents = function renderEvents(events) {
  * @param {array} events
  */
 DayView.prototype._processEvents = function _processEvents(events) {
-    var eCount = events.length, iCount, self = this;
+    var eCount = events.length, self = this;
 
     for(var eIndex = 0; eIndex < eCount; ++eIndex) {
         self.tree.pushInterval(events[eIndex].start, events[eIndex].end);
@@ -321,7 +321,7 @@ DayView.prototype._groupIntervals = function _groupIntervals() {
     // };
 
     _.forEach(self.intervals, function(interval) {
-        var group, inserted = false;
+        var inserted = false;
 
         // add to it's own group if there are no overlaps
         if (interval.overlap.length === 0) {
@@ -362,7 +362,7 @@ DayView.prototype._processGroupColumns = function _processGroupColumns() {
     var self = this;
 
     // create columns in the groups now that everything is grouped
-    _.forEach(self.overlapGroups, function(group, index) {
+    _.forEach(self.overlapGroups, function(group) {
         var keys, curCol, tempColumns = [[]];
 
         // only create columns for groups with more than one item

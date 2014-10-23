@@ -1,0 +1,6 @@
+// Extend ../.jshintrc with test-specific options (TDD, BDD keywords, ...)
+{
+    "extends": "../.jshintrc",
+    "expr": true,
+    "predef": ["describe", "it", "before", "after", "beforeEach", "afterEach", "assert", "expect", "should", "sinon"]
+}

@@ -39,7 +39,7 @@ var mock = [
 
 
 ## TODOs
-- unit/performance tests
+- ~~unit/performance tests~~ more comlex tests need to be added
 - getting rid of external deps (3rd party)
 - compressing/uglifying JS
 - looking for ways to do this with less or more compact code

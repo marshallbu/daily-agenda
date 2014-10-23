@@ -25,7 +25,6 @@ module.exports = {
     },
     resolve: {
         modulesDirectories: ['app/scripts', 'node_modules', 'bower_modules'],
-        // packageAlias: false,
         alias: {
 			jquery: 'jquery/dist/jquery.min',
             lodash: 'lodash/dist/lodash.min',
@@ -42,7 +41,10 @@ module.exports = {
             $: 'jquery',
 			jQuery: 'jquery',
 		}),
-        new webpack.optimize.DedupePlugin()
-
+        new webpack.optimize.DedupePlugin(),
+        // getting rid of annoying warning in moment, we of course want locales, this is FB!
+        // in prod, this would probably be...
+        // new webpack.ContextReplacementPlugin(/path/to/moment[\/\\]locale$/, /en|fr/),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
 	]
 };
