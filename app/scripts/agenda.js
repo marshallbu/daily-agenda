@@ -283,9 +283,6 @@ Agenda.prototype._processIntervals = function _processIntervals(events) {
     var self = this;
 
     // get the intervals and overlap info from the tree
-    // self.intervals = self.tree.queryOverlap();
-    // CHANGED: use my own queries so I can remove endpoint overlaps in search,
-    // as most calendars don't consider 2-3pm and 3-4pm overlaping.
     _.forEach(events, function(event, index) {
         self.tree.queryInterval(event.start, event.end, { endpoints: false, resultFn: function(results) {
             self.intervals.push({
@@ -307,19 +304,7 @@ Agenda.prototype._processIntervals = function _processIntervals(events) {
 Agenda.prototype._groupIntervals = function _groupIntervals() {
     var self = this;
 
-    // CHANGED: changed this to create a group structure to keep common overlapping
-    // info amongst clusters of events.
-    // Each group will look like:
-    //
-    // var group = {
-    //     members: {
-    //         0: { // the key is the interval id for quick lookup
-    //             column: 0 // the column the member belongs in
-    //         }
-    //     },
-    //     columns: 1 // total number of columns for this group
-    // };
-
+    // create groups of clustered event information
     _.forEach(self.intervals, function(interval) {
         var inserted = false;
 
@@ -382,7 +367,6 @@ Agenda.prototype._processGroupColumns = function _processGroupColumns() {
                 while (true) {
                     // new column should be created
                     if (curCol >= tempColumns.length) {
-                        // logger.info('new column');
                         tempColumns.push([keys[i]]);
                         group.members[keys[i]].column = curCol;
                         group.columns = tempColumns.length;
@@ -459,6 +443,5 @@ Agenda.prototype._compareEvents = function _compareEvents() {
         return 0;
     };
 };
-
 
 module.exports = Agenda;
