@@ -1,21 +1,21 @@
 var $ = require('jquery'),
     logger = require('modules/logger'),
-    DayView = require('day-view');
+    DailyAgenda = require('agenda');
 
-(function($, logger, DayView) {
+(function($, logger, DailyAgenda) {
     var viewContainer = $('div.calendar-view');
 
     if (viewContainer.length > 0) {
-        // this will initialize the DayView display, and prepare to take in events
+        // this will initialize the display and prepare it for events
         // via window.layOutDay
-        var myDayView = new DayView({
+        var agenda = new DailyAgenda({
             view: viewContainer
         });
 
         // provide window function to add event items
         window.layOutDay = function(events) {
             if (events) {
-                myDayView.renderEvents(events);
+                agenda.renderEvents(events);
             } else {
                 logger.error('events can\'t be empty!!');
             }
@@ -25,4 +25,4 @@ var $ = require('jquery'),
     } else {
         logger.error('No div.calendar-view in HTML!');
     }
-}($, logger, DayView));
+}($, logger, DailyAgenda));

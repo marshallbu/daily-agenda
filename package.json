@@ -1,7 +1,7 @@
 {
-  "name": "dayview",
+  "name": "daily-agenda",
   "version": "0.0.1",
-  "description": "a day view for FB",
+  "description": "a daily agenda for family events",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

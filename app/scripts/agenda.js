@@ -3,7 +3,7 @@ var $ = require('jquery'),
     logger = require('modules/logger'),
     moment = require('moment'),
     intervalQuery = require('interval-query'),
-    dayViewEventsTemplate = require('../partials/day-view-events.html'),
+    agendaEventsTemplate = require('../partials/agenda-events.html'),
     eventItemTemplate = require('../partials/event-item.html');
 
 // setting up a jQuery mixin to help remove classes by prefix
@@ -18,10 +18,10 @@ $.fn.removeClassPrefix = function(prefix) {
 };
 
 /**
- * DayView
+ * Agenda
  * @param {object} options
  */
-var DayView = function DayView(options) {
+var Agenda = function Agenda(options) {
     var self = this;
     self.options = options ? options : {};
 
@@ -56,7 +56,7 @@ var DayView = function DayView(options) {
         self.$view = self.options.view;
 
         // initialize our DOM partials, keep a reference to them
-        self.$eventsTemplate = $(dayViewEventsTemplate);
+        self.$eventsTemplate = $(agendaEventsTemplate);
         self.$eventsEl = self.$eventsTemplate.find('.events').hide();
 
         // initialize the view
@@ -70,7 +70,7 @@ var DayView = function DayView(options) {
  *
  * TODO: break this down into more separated chunks
  */
-DayView.prototype._initView = function _initView() {
+Agenda.prototype._initView = function _initView() {
     var currentTime, self = this;
 
     // TODO: should probably break this label setup into a separate function
@@ -108,7 +108,7 @@ DayView.prototype._initView = function _initView() {
  * @param {moment} time a moment object set to a specific time
  * @param {string} direction
  */
-DayView.prototype._calculatePercentageInDayRange = function _calculatePercentageInDayRange(time, direction) {
+Agenda.prototype._calculatePercentageInDayRange = function _calculatePercentageInDayRange(time, direction) {
     var diff, self = this;
     direction = direction || 'top'; // percentage from top or bottom of range
 
@@ -127,7 +127,7 @@ DayView.prototype._calculatePercentageInDayRange = function _calculatePercentage
  * a DOM element and positions it in the view (VERTICALLY).
  * @param {object} event {from: Number, to: Number, id: Number, overlap: Array}
  */
-DayView.prototype._positionEvent = function _positionEvent(event) {
+Agenda.prototype._positionEvent = function _positionEvent(event) {
     var $eventItemEl, eventStart, eventEnd, self = this;
 
     // for the event of data coming in on each event, you could use the following
@@ -153,7 +153,7 @@ DayView.prototype._positionEvent = function _positionEvent(event) {
 /**
  * remove overlaps by adjusting elements position.left and position.right accordingly
  */
-DayView.prototype._removeOverlaps = function _removeOverlaps() {
+Agenda.prototype._removeOverlaps = function _removeOverlaps() {
     var self = this;
 
     _.forEach(self.overlapGroups, function(group) {
@@ -228,7 +228,7 @@ DayView.prototype._removeOverlaps = function _removeOverlaps() {
  * and renders them to the view.
  * @param {array} events an array of objects in the format {start: Number, end: Number}
  */
-DayView.prototype.renderEvents = function renderEvents(events) {
+Agenda.prototype.renderEvents = function renderEvents(events) {
     var iCount, sortedEvents, self = this;
 
     // clear out any current events
@@ -261,7 +261,7 @@ DayView.prototype.renderEvents = function renderEvents(events) {
  * segment(interval) tree
  * @param {array} events
  */
-DayView.prototype._processEvents = function _processEvents(events) {
+Agenda.prototype._processEvents = function _processEvents(events) {
     var eCount = events.length, self = this;
 
     for(var eIndex = 0; eIndex < eCount; ++eIndex) {
@@ -279,7 +279,7 @@ DayView.prototype._processEvents = function _processEvents(events) {
     self._processGroupColumns();
 };
 
-DayView.prototype._processIntervals = function _processIntervals(events) {
+Agenda.prototype._processIntervals = function _processIntervals(events) {
     var self = this;
 
     // get the intervals and overlap info from the tree
@@ -304,7 +304,7 @@ DayView.prototype._processIntervals = function _processIntervals(events) {
 /**
  * Groups intervals into clusters of shared overlaps
  */
-DayView.prototype._groupIntervals = function _groupIntervals() {
+Agenda.prototype._groupIntervals = function _groupIntervals() {
     var self = this;
 
     // CHANGED: changed this to create a group structure to keep common overlapping
@@ -358,7 +358,7 @@ DayView.prototype._groupIntervals = function _groupIntervals() {
 /**
  * process each group's column information
  */
-DayView.prototype._processGroupColumns = function _processGroupColumns() {
+Agenda.prototype._processGroupColumns = function _processGroupColumns() {
     var self = this;
 
     // create columns in the groups now that everything is grouped
@@ -411,7 +411,7 @@ DayView.prototype._processGroupColumns = function _processGroupColumns() {
  * creates a blank group, or one that is intialized with a given interval
  * @param {[type]} interval [description]
  */
-DayView.prototype._createGroup = function _createGroup(interval) {
+Agenda.prototype._createGroup = function _createGroup(interval) {
     var group = {
         members: {},
         columns: 1
@@ -429,7 +429,7 @@ DayView.prototype._createGroup = function _createGroup(interval) {
 /**
  * Will clear any current events out of the events container.
  */
-DayView.prototype._clearEvents = function _clearEvents() {
+Agenda.prototype._clearEvents = function _clearEvents() {
     var self = this;
     self.$eventsEl.hide(); // take it out of the render tree
     self.$eventsEl.empty();
@@ -442,7 +442,7 @@ DayView.prototype._clearEvents = function _clearEvents() {
  * this is a generic comparator for sorting the calendar event objects
  * @param {string} property
  */
-DayView.prototype._compareEvents = function _compareEvents() {
+Agenda.prototype._compareEvents = function _compareEvents() {
     return function(a,b) {
         if (a.start > b.start) {
             return 1;
@@ -461,4 +461,4 @@ DayView.prototype._compareEvents = function _compareEvents() {
 };
 
 
-module.exports = DayView;
+module.exports = Agenda;

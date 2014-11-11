@@ -1,6 +1,6 @@
 var webpack = require('webpack'),
     isProduction = process.env.NODE_ENV === 'production',
-    path = require("path"),
+    path = require('path'),
     config = require('./gulp_tasks/utils/config.js');
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
 	},
     module: {
         preLoaders: [
-            { test: /\.js$/, loader: "source-map" }
+            { test: /\.js$/, loader: 'source-map' }
         ],
 		loaders: [
             { test: /\.json$/, loader: 'json' },
@@ -42,7 +42,7 @@ module.exports = {
 			jQuery: 'jquery',
 		}),
         new webpack.optimize.DedupePlugin(),
-        // getting rid of annoying warning in moment, we of course want locales, this is FB!
+        // getting rid of annoying warning in moment, we of course want locales
         // in prod, this would probably be...
         // new webpack.ContextReplacementPlugin(/path/to/moment[\/\\]locale$/, /en|fr/),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)

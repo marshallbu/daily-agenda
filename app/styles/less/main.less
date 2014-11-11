@@ -39,9 +39,9 @@ body {
 /////////////////////////////////////////////
 // now for the meat and potatoes of style  //
 /////////////////////////////////////////////
-@fbBlue: #486fa4;
-@fbText: #292929;
-@fbMutedText: #999;
+@mbuOrange: #ff8000;
+@text: #292929;
+@mutedText: #999;
 @maxColumns: 100; // for the event of 100 max events that all overlap
 
 .box-shadow(@shadow) {
@@ -84,16 +84,16 @@ body {
         text-align: right;
         font-size: 0.857em;
         font-weight: bold;
-        color: @fbMutedText;
+        color: @mutedText;
 
         &.top-of-hour {
             font-size: 1.000em;
-            color: @fbText;
+            color: @text;
             /* font-weight: bold; */
 
             .meridiem {
                 font-size: 0.857em;
-                color: @fbMutedText;
+                color: @mutedText;
                 margin-left: 5px;
             }
         }
@@ -132,19 +132,19 @@ body {
                 top: 0;
                 bottom: 0;
                 left: 0;
-                background: @fbBlue;
+                background: @mbuOrange;
             }
 
             .title {
                 font-weight: bold;
                 line-height: normal;
-                color: @fbBlue;
+                color: @mbuOrange;
             }
 
             .location {
                 font-size: 0.857em;
                 line-height: normal;
-                color: @fbMutedText;
+                color: @mutedText;
             }
         }
     }

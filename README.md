@@ -1,5 +1,10 @@
-# day-view
-A puzzle for FB
+# daily agenda
+A Full Blown way to show a daily agenda of events.  Will probably end up using this
+on a wall mounted iPad.  The display is similar to a "day view" or "single day calendar" view
+you'd see in your favoriate calendar app.
+of events.
+
+![Alt text](agenda.png "A screenshot of a rendered single day calendar")
 
 ## Requirements to build (global deps)
 - [node](http://nodejs.org)
@@ -39,7 +44,8 @@ var mock = [
 
 
 ## TODOs
-- ~~unit/performance tests~~ more comlex tests need to be added
+- ~~remove references to anything blue~~
+- ~~unit/performance tests~~ more complex tests need to be added
 - getting rid of external deps (3rd party)
 - compressing/uglifying JS
 - looking for ways to do this with less or more compact code

@@ -33,8 +33,8 @@ module.exports = function (config) {
                     jQuery: 'jquery',
                 }),
                 new webpack.optimize.DedupePlugin(),
-                // getting rid of annoying warning in moment, we of course want locales, this is FB!
-                // in prod, this would probably be...
+                // getting rid of annoying warning in moment, we of course want locales
+                // in prod, this should be...
                 // new webpack.ContextReplacementPlugin(/path/to/moment[\/\\]locale$/, /en|fr/),
                 new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
             ]
