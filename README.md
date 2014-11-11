@@ -15,7 +15,7 @@ of events.
 npm install && gulp
 ```
 
-Build project is created under `dist` directory.
+Built package is created under `dist` directory.
 
 ## Assumptions
 - don't care about text getting cut off (overflow: hidden, but this could be fixed my popups, or forcing some vertical overlap for sake of readability of event information)
