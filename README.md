@@ -1,8 +1,7 @@
 # daily agenda
 A Full Blown way to show a daily agenda of events.  Will probably end up using this
 on a wall mounted iPad.  The display is similar to a "day view" or "single day calendar" view
-you'd see in your favoriate calendar app.
-of events.
+you'd see in your favorite calendar app.
 
 ![Alt text](agenda.png "A screenshot of a rendered single day calendar")
 
