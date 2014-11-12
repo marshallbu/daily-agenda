@@ -31,7 +31,6 @@
     "gulp-watch": "^1.1.0",
     "gulp-webpack": "^1.0.0",
     "html-loader": "^0.2.3",
-    "interval-query": "marshallbu/interval-query",
     "istanbul-instrumenter-loader": "deepsweet/istanbul-instrumenter-loader",
     "jshint-stylish": "^1.0.0",
     "json-loader": "^0.5.1",
