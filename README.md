@@ -17,7 +17,7 @@ npm install && gulp
 Built package is created under `dist` directory.
 
 ## Assumptions
-- don't care about text getting cut off (overflow: hidden, but this could be fixed my popups, or forcing some vertical overlap for sake of readability of event information)
+- don't care about text getting cut off (overflow: hidden, but this could be fixed by popups, or forcing some vertical overlap for sake of readability of event information)
 - visual spanning is based on columns needed in groups of clusters; there aren't sub groups inside of any groups that would make it more difficult to determine spanning
 - data is correct, meaning no malformed response from a service
 - not responsive (could easily change this since all positions are % based)
