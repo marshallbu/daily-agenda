@@ -1,7 +1,7 @@
 # daily agenda
 A Full Blown way to show a daily agenda of events.  Will probably end up using this
 on a wall mounted iPad.  The display is similar to a "day view" or "single day calendar" view
-you'd see in your favorite calendar app.
+you'd see in your favorite neighborhood calendaring app.
 
 ![Alt text](agenda.png "A screenshot of a rendered single day calendar")
 
@@ -17,13 +17,10 @@ npm install && gulp
 Built package is created under `dist` directory.
 
 ## Assumptions
-- don't care about text getting cut off (overflow: hidden, but this could be fixed by popups, or forcing some vertical overlap for sake of readability of event information)
-- visual spanning is based on columns needed in groups of clusters; there aren't sub groups inside of any groups that would make it more difficult to determine spanning
-- data is correct, meaning no malformed response from a service
+- don't care about text getting cut off (for now)
+- visual spanning is based on columns needed in groups of clusters (need to fix this after condensed code changes)
 - not responsive (could easily change this since all positions are % based)
-- "infinite" overlapping, meaning all events could overlap, thus making 100 max columns in one group (chaos?)
-- ~~sort events off start time, not both start and end~~ sorting on both now
-- example type of data as grokked from instructions:
+- example type of data as grokked from real world events:
 ```
 var mock = [
     {"start": 30, "end": 150},
@@ -47,4 +44,4 @@ var mock = [
 - ~~unit/performance tests~~ more complex tests need to be added
 - getting rid of external deps (3rd party)
 - compressing/uglifying JS
-- looking for ways to do this with less or more compact code
+- ~~doing this with less or more compact code~~
