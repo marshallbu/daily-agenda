@@ -18,7 +18,6 @@ var Agenda = function Agenda(options) {
 
     // expect a non empty jQuery object to setup day view
     if (!(self.options.view instanceof $)) {
-        // TODO: display some visual error, even if not required
         logger.error('tried to instantiate without proper view');
     } else {
         self.$view = self.options.view;
@@ -36,12 +35,10 @@ var Agenda = function Agenda(options) {
  * this function will initialize our day view, setting up scaffolding and common
  * elements that shouldn't change outside of CSS media queries
  *
- * TODO: break this down into more separated chunks
  */
 Agenda.prototype._initView = function _initView() {
     var currentTime, self = this;
 
-    // TODO: should probably break this label setup into a separate function
     // clone a moment at the set dayRangeStart
     currentTime = moment(self.dayRangeStart);
 
@@ -88,14 +85,12 @@ Agenda.prototype.renderEvents = function renderEvents(events) {
 };
 
 /**
- * Takes in a sorted list of events, and processes the events into the internal
- * segment(interval) tree
+ * Takes in a sorted list of events and creates an array of cluster information
+ * for help with positioning events.
  * @param {array} events
  */
 Agenda.prototype._processEvents = function _processEvents(events) {
-    var self = this;
-
-    var clusters = [];
+    var clusters = [], self = this;
 
     _.forEach(events, function(event, index) {
         var insertedInCluster = false;
@@ -148,7 +143,6 @@ Agenda.prototype._processEvents = function _processEvents(events) {
         // add the first event to it's own cluster, or if no cluster was found,
         // add it to a new one
         if (index === 0 || !insertedInCluster) {
-            if (index === 0) { logger.info('first one'); }
             clusters.push({
                 cols: [{
                     members: [{
@@ -175,13 +169,15 @@ Agenda.prototype._processEvents = function _processEvents(events) {
  * @param {object} event {from: Number, to: Number, id: Number, overlap: Array}
  */
 Agenda.prototype._positionEvents = function _positionEvents(events, clusters) {
-    var $eventItemEl, eventStart, eventEnd, elLeft, elRight, self = this;
+    var self = this;
 
     _.forEach(clusters, function(cluster) {
 
         _.forEach(cluster.cols, function(col) {
 
             _.forEach(col.members, function(member) {
+                var $eventItemEl, eventStart, eventEnd, elLeft, elRight;
+
                 // for the event of data coming in on each event, you could use the following
                 // to dynamically compile templates for each
                 $eventItemEl = $(eventItemTemplate);
@@ -203,18 +199,16 @@ Agenda.prototype._positionEvents = function _positionEvents(events, clusters) {
 
                 // position
                 $eventItemEl.css('left', elLeft + '%');
+                // TODO: make this take up entire space to right if no immediate overlap
                 $eventItemEl.css('right', Math.abs(elRight - 100) + '%');
 
                 // add the event to the events container
                 self.$eventsEl.append($eventItemEl);
             });
 
-
         });
 
     });
-
-
 };
 
 /**
