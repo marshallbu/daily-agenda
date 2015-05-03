@@ -12,10 +12,10 @@ module.exports = {
     },
     glob: {
       scripts: [
-        './app/scripts/**/*.js'
+        './app/scripts/**/*.{js,jsx}'
       ],
       scriptsToLint: [
-        './app/scripts/**/*.js',
+        './app/scripts/**/*.{js,jsx}',
         '!./app/scripts/libs/**',
         '!./app/scripts/workers/**'
       ],
@@ -37,9 +37,7 @@ module.exports = {
       extras: ['./app/*.*', '!app/*.html']
     },
     file: {
-      app: './app/scripts/index.js',
-      lib: './app/scripts/libs/libs.js',
-      testConfig: './../../../test/config/karma.conf.js',
+      app: './app/scripts/index.jsx',
       text: [
         './app/.htaccess',
         './app/favicon.ico',

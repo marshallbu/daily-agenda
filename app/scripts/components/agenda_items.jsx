@@ -1,6 +1,6 @@
 var React = require('react');
+var ReactCSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup');
 var moment = require('moment');
-var classNames = require('classnames');
 var utils = require('./../modules/utils');
 var _forEach = require('lodash').forEach;
 var EventProcessor = require('./../modules/event_processor');
@@ -55,7 +55,7 @@ class AgendaItems extends React.Component {
 
           // add the event to the events container
           items.push(
-            <AgendaItem dynamicStyles={styles} key={itemsCount++} />
+            <AgendaItem key={itemsCount++} positionStyles={styles} event={event} />
           );
         });
 

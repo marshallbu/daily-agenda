@@ -31,6 +31,7 @@ class Agenda extends React.Component {
 
     while(!sInterval.isAfter(e)) {
       isTopOfHour = sInterval.minutes() === 0;
+      m = null;
 
       classes = classNames(
         'time-label',
@@ -43,7 +44,7 @@ class Agenda extends React.Component {
         'top': utils.calculatePercentageInTimeRange(s, e, sInterval) + '%'
       };
 
-      if (sInterval.minutes() === 0) {
+      if (isTopOfHour) {
         m = (
           <span className="meridiem">
             {sInterval.format('A')}
@@ -54,7 +55,7 @@ class Agenda extends React.Component {
       // push a component
       labels.push(
         <div className={classes} style={styles} key={`time-label-${lCount++}`}>
-          {sInterval.format('h:mm')} {m}
+          {sInterval.format('h:mm')}{m}
         </div>
       );
 
