@@ -13,6 +13,11 @@ class AgendaItem extends React.Component {
     };
   }
 
+  handleClick(e) {
+    e.preventDefault();
+    this.props.clickCallback(this.props.event);
+  }
+
   /**
    * Render component.
    */
@@ -21,17 +26,16 @@ class AgendaItem extends React.Component {
         styles;
 
     styles = {};
-
     styles = _assign(styles, this.props.positionStyles);
 
     return (
-      <div className="item animated fadeIn" style={styles}>
+      <div className="item" style={styles} onClick={this.handleClick.bind(this)}>
         <div className="event">
           <div className="event-handle"></div>
           <div className="title">{title}</div>
           <div className="location"></div>
           <div className="capacity">
-            Seats: <span className="pill">{seats.available < seats.total ? `${seats.available}/${seats.total}` : 'FULL'}</span>
+            Seats: <span className="badge">{seats.available < seats.total ? `${seats.available}/${seats.total}` : 'FULL'}</span>
           </div>
         </div>
       </div>
@@ -41,11 +45,14 @@ class AgendaItem extends React.Component {
 
 AgendaItem.propTypes = {
   positionStyles: React.PropTypes.object,
-  event: React.PropTypes.object
+  event: React.PropTypes.object,
+  clickCallback: React.PropTypes.func
 };
 
 AgendaItem.defaultProps = {
-
+  positionStyles: {},
+  event: {},
+  clickCallback: () => {}
 };
 
 module.exports = AgendaItem;

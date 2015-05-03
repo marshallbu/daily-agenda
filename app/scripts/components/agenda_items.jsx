@@ -1,10 +1,11 @@
 var React = require('react');
-var ReactCSSTransitionGroup = require('react/lib/ReactCSSTransitionGroup');
 var moment = require('moment');
 var utils = require('./../modules/utils');
 var _forEach = require('lodash').forEach;
 var EventProcessor = require('./../modules/event_processor');
 var AgendaItem = require('./agenda_item');
+var Button = require('react-bootstrap').Button;
+var Modal = require('react-bootstrap').Modal;
 
 class AgendaItems extends React.Component {
   /**
@@ -17,7 +18,9 @@ class AgendaItems extends React.Component {
 
     this.state = {
       events,
-      clusters: EventProcessor.processEvents(events)
+      clusters: EventProcessor.processEvents(events),
+      showModal: false,
+      modalItem: null
     };
   }
 
@@ -55,7 +58,7 @@ class AgendaItems extends React.Component {
 
           // add the event to the events container
           items.push(
-            <AgendaItem key={itemsCount++} positionStyles={styles} event={event} />
+            <AgendaItem key={itemsCount++} positionStyles={styles} event={event} clickCallback={this.openModal.bind(this)} />
           );
         });
 
@@ -65,6 +68,20 @@ class AgendaItems extends React.Component {
 
     return items;
   };
+
+  openModal(item) {
+    this.setState({
+      showModal: true,
+      modalItem: item
+    });
+  }
+
+  closeModal() {
+    this.setState({
+      showModal: false,
+      modalItem: null
+    });
+  }
 
   componentWillMount() {
 
@@ -78,10 +95,32 @@ class AgendaItems extends React.Component {
    * Render component.
    */
   render() {
+    var modal = null,
+        event = this.state.modalItem;
+
+    if (this.state.showModal) {
+      modal = (
+        <Modal title="Event Details"
+          onRequestHide={this.closeModal.bind(this)}
+          bsSize="large">
+          <div className="modal-body">
+            <h2>
+              {event.title} <br/>
+              <small>Presented by {event.presenter}</small>
+            </h2>
+            <p className="lead">{event.description}</p>
+          </div>
+          <div className="modal-footer">
+            <Button onClick={this.closeModal.bind(this)}>Close</Button>
+          </div>
+        </Modal>
+      );
+    }
 
     return (
       <div className="items">
         {this.generateItems()}
+        {modal}
       </div>
     );
   }

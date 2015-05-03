@@ -12,6 +12,7 @@
   "devDependencies": {
     "babel-core": "^5.2.6",
     "babel-loader": "^5.0.0",
+    "bootstrap": "^3.3.4",
     "chai": "^2.3.0",
     "classnames": "^1.2.2",
     "del": "^1.1.1",
@@ -51,6 +52,8 @@
     "normalize.css": "^3.0.3",
     "pretty-hrtime": "^1.0.0",
     "react": "^0.13.2",
+    "react-bootstrap": "^0.21.2",
+    "react-modal-component": "^1.0.9",
     "react-router": "^0.13.3",
     "run-sequence": "^1.1.0",
     "sinon": "^1.14.1",

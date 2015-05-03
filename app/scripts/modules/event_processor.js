@@ -18,7 +18,7 @@ class EventProcessor {
   static processEvents(events) {
     var clusters = [];
 
-    logger.info(events);
+    // logger.info(events);
 
     _forEach(events, (event, index) => {
       var insertedInCluster = false;
@@ -84,7 +84,7 @@ class EventProcessor {
       }
     });
 
-    logger.info('clusters:', clusters);
+    // logger.info('clusters:', clusters);
 
     return clusters;
   };

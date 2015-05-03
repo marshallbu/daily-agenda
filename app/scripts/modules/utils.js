@@ -28,6 +28,15 @@ module.exports = {
     }
   },
 
+  // http://youmightnotneedjquery.com/
+  hasClass(el, className) {
+    if (el.classList) {
+      el.classList.contains(className);
+    } else {
+      new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+    }
+  },
+
   hide(el) {
     el.style.display = 'none';
   },
