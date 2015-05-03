@@ -12,6 +12,6 @@ gulp.task('minhtml', ['compile-html'], function() {
   };
 
   return gulp.src(config.distRoot + '*.html')
-    // .pipe(plugins.if(isProduction, plugins.minifyHtml(opts)))
+    .pipe(plugins.if(isProduction, plugins.minifyHtml(opts)))
     .pipe(gulp.dest(config.distRoot));
 });
