@@ -74,7 +74,10 @@ class Agenda extends React.Component {
     return (
       <div className="items-container">
         {this.generateLabels()}
-        <AgendaItems events={events} />
+        <AgendaItems
+          events={events}
+          rangeStart={this.state.rangeStart}
+          rangeEnd={this.state.rangeEnd} />
       </div>
     );
   }

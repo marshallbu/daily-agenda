@@ -22,11 +22,11 @@ class AgendaItem extends React.Component {
 
     return (
       <div className="item">
-          <div className="event">
-              <div className="event-handle"></div>
-              <div className="title"></div>
-              <div className="location"></div>
-          </div>
+        <div className="event">
+          <div className="event-handle"></div>
+          <div className="title"></div>
+          <div className="location"></div>
+        </div>
       </div>
     );
   }
