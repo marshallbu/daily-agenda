@@ -96,22 +96,42 @@ class AgendaItems extends React.Component {
    */
   render() {
     var modal = null,
-        event = this.state.modalItem;
+        event = this.state.modalItem,
+        seats, register;
 
     if (this.state.showModal) {
+      seats = event.seats.available < event.seats.total ? `${event.seats.available}/${event.seats.total}` : 'FULL';
+
+      if (seats === 'FULL') {
+        register = (
+          <Button bsStyle="primary" bsSize="large">Waitlist</Button>
+        );
+      } else {
+        register = (
+          <Button bsStyle="primary" bsSize="large">Register</Button>
+        );
+      }
+
       modal = (
         <Modal title="Event Details"
           onRequestHide={this.closeModal.bind(this)}
           bsSize="large">
           <div className="modal-body">
+            <img src={event.image} alt="Event Description Image" className="img-rounded pull-right" />
             <h2>
               {event.title} <br/>
               <small>Presented by {event.presenter}</small>
             </h2>
             <p className="lead">{event.description}</p>
+            <p>
+            {event.time.start.format('dddd, MMMM Do YYYY, h:mm A')}<br/>
+            <strong>Duration:</strong> {moment.duration(event.time.end.diff(event.time.start)).humanize()}<br/>
+            <strong>Seats Available:</strong> <span className="badge">{seats}</span>
+            </p>
           </div>
           <div className="modal-footer">
-            <Button onClick={this.closeModal.bind(this)}>Close</Button>
+            <Button bsSize="large" onClick={this.closeModal.bind(this)}>Close</Button>
+            {register}
           </div>
         </Modal>
       );
