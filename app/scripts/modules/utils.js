@@ -2,7 +2,7 @@ module.exports = {
   // fast node list to array conversion, yes, the object lookup makes it slower
   // but, DRY
   // http://jsperf.com/nodelist-to-array/68
-  toArray: function toArray(nl) {
+  toArray(nl) {
     var arr = [];
     for (var i = 0, ref = arr.length = nl.length; i < ref; i++) {
       arr[i] = nl[i];
@@ -11,7 +11,7 @@ module.exports = {
   },
 
   // http://youmightnotneedjquery.com/
-  addClass: function addClass(el, className) {
+  addClass(el, className) {
     if (el.classList) {
       el.classList.add(className);
     } else {
@@ -20,7 +20,7 @@ module.exports = {
   },
 
   // http://youmightnotneedjquery.com/
-  removeClass: function removeClass(el, className) {
+  removeClass(el, className) {
     if (el.classList) {
       el.classList.remove(className);
     } else {
@@ -28,16 +28,16 @@ module.exports = {
     }
   },
 
-  hide: function hide(el) {
+  hide(el) {
     el.style.display = 'none';
   },
 
-  show: function show(el) {
+  show(el) {
     el.style.display = '';
   },
 
   //Returns true if it is a DOM node
-  isNode: function isNode(o){
+  isNode(o){
     return (
       typeof Node === 'object' ? o instanceof Node :
       o && typeof o === 'object' && typeof o.nodeType === 'number' && typeof o.nodeName === 'string'
@@ -45,7 +45,7 @@ module.exports = {
   },
 
   //Returns true if it is a DOM element
-  isElement: function isElement(o){
+  isElement(o){
     return (
       typeof HTMLElement === 'object' ? o instanceof HTMLElement : //DOM2
       o && typeof o === 'object' && o !== null && o.nodeType === 1 && typeof o.nodeName === 'string'

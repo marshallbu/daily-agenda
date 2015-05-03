@@ -1,15 +1,15 @@
 {
 	"env": {
-		"node": 1,
-		"browser": 1,
-		"jquery": 1
+		"node": true,
+		"browser": true,
+		"jquery": true
 	},
 	"rules": {
 		"strict": 0,
 		"curly": 0,
 		"quotes": [1, "single"],
 		"no-underscore-dangle": 0,
-		"no-unused-vars": 2,
+		"no-unused-vars": 1,
 		"react/display-name": 0,
     "react/jsx-boolean-value": 1,
     "react/jsx-quotes": 1,
@@ -28,14 +28,18 @@
     "react/wrap-multilines": 1
 	},
 	"ecmaFeatures": {
-		"blockBindings": 1,
-		"classes": 1,
-		"destructuring": 1,
-    "forOf": 1,
-		"spread": 1,
-		"superInFunctions": 1,
-		"templateStrings": 1,
-    "jsx": 1
+		"blockBindings": true,
+		"classes": true,
+		"destructuring": true,
+    "forOf": true,
+		"objectLiteralComputedProperties": true,
+		"objectLiteralDuplicateProperties": true,
+		"objectLiteralShorthandMethods": true,
+		"objectLiteralShorthandProperties": true,
+		"spread": true,
+		"superInFunctions": true,
+		"templateStrings": true,
+    "jsx": true
   },
 	"plugins": [
     "react"

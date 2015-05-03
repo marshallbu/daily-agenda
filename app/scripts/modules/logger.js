@@ -2,22 +2,22 @@ var console, Logger;
 
 // make using console safe if it doesn't exist (IE....)
 console = window.console || {
-    log: function () {
+    log() {
         return void 0;
     },
-    info: function () {
+    info() {
         return void 0;
     },
-    warn: function () {
+    warn() {
         return void 0;
     },
-    error: function () {
+    error() {
         return void 0;
     },
-    dir: function() {
+    dir() {
         return void 0;
     },
-    console: function() {
+    console() {
         return void 0;
     }
 };
@@ -29,19 +29,19 @@ console.dir = console.dir || console.log;
 console.table = console.table || console.log;
 
 Logger = {
-    info: function () {
+    info() {
         console.info.apply(console, arguments);
     },
-    warn: function () {
+    warn() {
         console.warn.apply(console, arguments);
     },
-    error: function () {
+    error() {
         console.error.apply(console, arguments);
     },
-    dir: function () {
+    dir() {
         console.dir.apply(console, arguments);
     },
-    table: function() {
+    table() {
         console.table.apply(console, arguments);
     }
 };

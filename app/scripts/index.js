@@ -5,7 +5,7 @@ var routes = require('./routes');
 var logger = require('modules/logger');
 
 var Main = module.exports = {
-    start: function start() {
+    start() {
       React.initializeTouchEvents(true);
 
       Router.run(routes, function (Handler) {

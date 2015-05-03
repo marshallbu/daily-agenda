@@ -1,7 +1,15 @@
 var React = require('react');
 
-var RouteNotFound = React.createClass({
-  render: function () {
+class RouteNotFound extends React.Component {
+  constructor(props) {
+    // this replaces getInitialState()
+    super(props);
+
+    this.state = {
+    };
+  }
+
+  render() {
 
     return (
       <div className="">
@@ -9,6 +17,6 @@ var RouteNotFound = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = RouteNotFound;

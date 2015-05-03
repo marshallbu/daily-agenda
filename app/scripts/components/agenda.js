@@ -1,7 +1,15 @@
 var React = require('react');
 
-var Agenda = React.createClass({
-  render: function () {
+class Agenda extends React.Component {
+  constructor(props) {
+    // this replaces getInitialState()
+    super(props);
+
+    this.state = {
+    };
+  }
+
+  render() {
 
     return (
       <div className="events-container">
@@ -9,6 +17,6 @@ var Agenda = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = Agenda;
