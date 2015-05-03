@@ -6,7 +6,8 @@ var _map = require('lodash').map;
 class EventProcessor {
 
   static sortEvents(events) {
-    return events.sort(EventProcessor._compareEvents());
+    var evts = EventProcessor._convertToMoments(events);
+    return evts.sort(EventProcessor._compareEvents());
   }
 
   /**
@@ -15,12 +16,11 @@ class EventProcessor {
    * @param {array} events (EXPECTS THEM TO BE SORTED!!)
    */
   static processEvents(events) {
-    var clusters = [],
-        evts = EventProcessor._convertToMoments(events);
+    var clusters = [];
 
-    logger.info(sortedEvents);
+    logger.info(events);
 
-    _forEach(sortedEvents, (event, index) => {
+    _forEach(events, (event, index) => {
       var insertedInCluster = false;
 
       // find a cluster for it to go in

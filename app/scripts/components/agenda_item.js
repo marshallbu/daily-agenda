@@ -21,7 +21,7 @@ class AgendaItem extends React.Component {
   render() {
 
     return (
-      <div className="item">
+      <div className="item" style={this.props.dynamicStyles}>
         <div className="event">
           <div className="event-handle"></div>
           <div className="title"></div>

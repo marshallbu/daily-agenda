@@ -30,6 +30,7 @@ class AgendaItems extends React.Component {
         clusters = this.state.clusters,
         s = this.props.rangeStart,
         e = this.props.rangeEnd,
+        itemsCount = 0,
         items = [];
 
     _forEach(clusters, (cluster) => {
@@ -37,33 +38,32 @@ class AgendaItems extends React.Component {
       _forEach(cluster.cols, (col) => {
 
         _forEach(col.members, (member) => {
-          var eventStart, eventEnd, elLeft, elRight;
+          var event = events[member.eventIndex],
+              elLeft = (member.col / cluster.cols.length) * 100,
+              elRight = ((member.col + 1) / cluster.cols.length) * 100,
+              eventStart = moment(event.time.start.format('HH:mm:ss:SSS'), 'HH:mm:ss:SSS'),
+              eventEnd = moment(event.time.end.format('HH:mm:ss:SSS'), 'HH:mm:ss:SSS'),
+              styles;
 
-          // add the amount of minutes from our event to the dayRangeStart to get the
-          // event time
-          eventStart = moment(self.dayRangeStart).add(events[member.eventIndex].start, 'm');
-          eventEnd = moment(self.dayRangeStart).add(events[member.eventIndex].end, 'm');
-
-          elLeft = (member.col / cluster.cols.length) * 100;
-          elRight = ((member.col + 1) / cluster.cols.length) * 100;
-
-          var styles = {
+          styles = {
             top: utils.calculatePercentageInTimeRange(s, e, eventStart) + '%',
             bottom: utils.calculatePercentageInTimeRange(s, e, eventEnd, 'bottom') + '%',
             left: elLeft + '%',
             // TODO: make this take up entire space to right if no immediate overlap
             right: Math.abs(elRight - 100) + '%'
-          }
+          };
 
           // add the event to the events container
           items.push(
-            <AgendaItem />
-          )
+            <AgendaItem dynamicStyles={styles} key={itemsCount++} />
+          );
         });
 
       });
 
     });
+
+    return items;
   };
 
   componentWillMount() {
@@ -81,22 +81,20 @@ class AgendaItems extends React.Component {
 
     return (
       <div className="items">
+        {this.generateItems()}
       </div>
     );
   }
 }
 
 AgendaItems.propTypes = {
-  // You can also specify a custom validator. It should return an Error
-  // object if the validation fails. Don't `console.warn` or throw, as this
-  // won't work inside `oneOfType`.
-  rangeStart: (props, propName, componentName) => {
-    if (!/matchme/.test(props[propName])) {
+  rangeStart: (props, propName) => {
+    if (!props[propName].isValid || !props[propName].isValid()) {
       return new Error('Validation failed!');
     }
   },
-  rangeEnd: (props, propName, componentName) => {
-    if (!/matchme/.test(props[propName])) {
+  rangeEnd: (props, propName) => {
+    if (!props[propName].isValid || !props[propName].isValid()) {
       return new Error('Validation failed!');
     }
   },
