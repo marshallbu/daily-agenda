@@ -22,6 +22,12 @@ module.exports = {
             styles: [
                 './app/styles/less/main.less'
             ],
+            images: [
+              './app/images/**/*.{png,jpg,gif,svg}'
+            ],
+            fonts: [
+              './app/fonts/**/*.{eot,svg,ttf,woff}'
+            ],
             html: ['./app/*.html', './app/*.php'],
             partials: ['./app/partials/**/*.html'],
             extras: ['./app/*.*', '!app/*.html'],
@@ -58,8 +64,7 @@ module.exports = {
             unit: './test/unit_spec/',
         },
         glob: {
-            unit: ['./test/unit_spec/**/*.js'],
-            karmaUnit: ['./test/unit_spec/**/*_spec.js'],
+            unit: ['./test/unit_spec/**/*.js']
         }
     }
 };
