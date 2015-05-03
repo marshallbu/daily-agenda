@@ -1,12 +1,11 @@
 var gulp = require('gulp'),
     sequence = require('run-sequence');
 
-gulp.task('build', ['prep-build'], function (callback) {
+gulp.task('build', ['prep-build'], function (cb) {
     sequence(
-        'bower',
         // ['images', 'fonts', 'minhtml', 'mincss', 'extras'],
-        ['minhtml', 'mincss', 'extras'],
+        ['fonts', 'minhtml', 'mincss', 'extras'],
         'webpack:build',
-        callback
+        cb
     );
 });

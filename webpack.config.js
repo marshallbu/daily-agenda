@@ -20,7 +20,8 @@ module.exports = {
         ],
 		loaders: [
             { test: /\.json$/, loader: 'json' },
-            { test: /\.html$/, loader: 'html' }
+            { test: /\.html$/, loader: 'html' },
+            { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
         ]
     },
     resolve: {
