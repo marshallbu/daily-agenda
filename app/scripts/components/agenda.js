@@ -11,8 +11,8 @@ class Agenda extends React.Component {
     super(props);
 
     this.state = {
-      dayRangeStart: moment().hours(8).minutes(0),
-      dayRangeEnd: moment().hours(21).minutes(0)
+      rangeStart: moment().hours(props.start.hour).minutes(props.start.minute),
+      rangeEnd: moment().hours(props.end.hour).minutes(props.end.minute)
     };
   }
 
@@ -20,9 +20,10 @@ class Agenda extends React.Component {
    * Generate and return an array of label components.
    */
   generateLabels() {
-    var s = this.state.dayRangeStart,
-        e = this.state.dayRangeEnd,
+    var s = this.state.rangeStart,
+        e = this.state.rangeEnd,
         sInterval = moment(s),
+        lCount = 0, // used for keys in React, advanced via post-increment
         labels = [],
         m, isTopOfHour, classes, styles;
 
@@ -50,7 +51,7 @@ class Agenda extends React.Component {
 
       // push a component
       labels.push(
-        <div className={classes} style={styles}>
+        <div className={classes} style={styles} key={`time-label-${lCount++}`}>
           {sInterval.format('h:mm')} {m}
         </div>
       );
@@ -76,5 +77,21 @@ class Agenda extends React.Component {
     );
   }
 }
+
+Agenda.propTypes = {
+  start: React.PropTypes.shape({
+    hour: React.PropTypes.number,
+    minute: React.PropTypes.number
+  }),
+  end: React.PropTypes.shape({
+    hour: React.PropTypes.number,
+    minute: React.PropTypes.number
+  })
+};
+
+Agenda.defaultProps = {
+  start: { hour: 8, minute: 0 },
+  end: { hour: 21, minute: 0 }
+};
 
 module.exports = Agenda;

@@ -12,7 +12,7 @@ var Main = module.exports = {
         // Handler here is our handler component defined in routes for whatever
         // route
         React.render(
-          <Handler/>,
+          <Handler />,
           document.getElementById('agenda-view')
         );
       });
