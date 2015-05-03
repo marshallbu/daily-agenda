@@ -29,6 +29,7 @@
     "react/wrap-multilines": 1
 	},
 	"ecmaFeatures": {
+		"arrowFunctions": true,
 		"blockBindings": true,
 		"classes": true,
 		"destructuring": true,

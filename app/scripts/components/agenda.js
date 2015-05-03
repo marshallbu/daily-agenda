@@ -3,6 +3,7 @@ var moment = require('moment');
 var classNames = require('classnames');
 var utils = require('./../modules/utils');
 var AgendaItems = require('./agenda_items');
+var events = require('./../../../mock_data/bushel.json');
 
 class Agenda extends React.Component {
   /**
@@ -73,7 +74,7 @@ class Agenda extends React.Component {
     return (
       <div className="items-container">
         {this.generateLabels()}
-        <AgendaItems />
+        <AgendaItems events={events} />
       </div>
     );
   }
