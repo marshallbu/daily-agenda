@@ -2,6 +2,7 @@ var React = require('react');
 var moment = require('moment');
 var classNames = require('classnames');
 var utils = require('./../modules/utils');
+var AgendaItems = require('./agenda_items');
 
 class Agenda extends React.Component {
   /**
@@ -70,9 +71,9 @@ class Agenda extends React.Component {
   render() {
 
     return (
-      <div className="events-container">
+      <div className="items-container">
         {this.generateLabels()}
-        <div className="events"></div>
+        <AgendaItems />
       </div>
     );
   }
