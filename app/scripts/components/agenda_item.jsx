@@ -1,5 +1,5 @@
 var React = require('react');
-var _assign = require('lodash').assign;
+var _assign = require('lodash/object/assign');
 
 class AgendaItem extends React.Component {
   /**

@@ -1,7 +1,7 @@
 // var logger = require('./logger');
 var moment = require('moment');
-var _forEach = require('lodash').forEach;
-var _map = require('lodash').map;
+var _forEach = require('lodash/collection/forEach');
+var _map = require('lodash/collection/map');
 
 class EventProcessor {
 

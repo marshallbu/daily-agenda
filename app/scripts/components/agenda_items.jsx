@@ -1,11 +1,11 @@
 var React = require('react');
 var moment = require('moment');
 var utils = require('./../modules/utils');
-var _forEach = require('lodash').forEach;
+var _forEach = require('lodash/collection/forEach');
 var EventProcessor = require('./../modules/event_processor');
 var AgendaItem = require('./agenda_item');
-var Button = require('react-bootstrap').Button;
-var Modal = require('react-bootstrap').Modal;
+var Button = require('react-bootstrap/lib/Button');
+var Modal = require('react-bootstrap/lib/Modal');
 
 class AgendaItems extends React.Component {
   /**
