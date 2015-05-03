@@ -1,4 +1,4 @@
-var logger = require('./logger');
+// var logger = require('./logger');
 var moment = require('moment');
 var _forEach = require('lodash').forEach;
 var _map = require('lodash').map;

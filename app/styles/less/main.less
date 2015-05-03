@@ -28,6 +28,8 @@ body {
   line-height: 1.428571429;
   color: #333;
   background-color: #fff;
+  // https://css-tricks.com/snippets/css/momentum-scrolling-on-ios-overflow-elements/
+  -webkit-overflow-scrolling: touch;
 }
 
 
@@ -103,6 +105,7 @@ body {
     position: absolute;
     left: 0;
     right: 0;
+    cursor: pointer;
 
     .event {
       position: absolute;
@@ -134,6 +137,15 @@ body {
       }
 
       .location {
+        font-size: 0.750em;
+        line-height: normal;
+        color: @mutedText;
+      }
+
+      .meta {
+        position: absolute;
+        left: 10px;
+        bottom: 5px;
         font-size: 0.750em;
         line-height: normal;
         color: @mutedText;

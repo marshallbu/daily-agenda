@@ -34,6 +34,7 @@ class AgendaItem extends React.Component {
           <div className="event-handle"></div>
           <div className="title">{title}</div>
           <div className="location"></div>
+          <div className="meta">Tap for Details</div>
           <div className="capacity">
             Seats: <span className="badge">{seats.available < seats.total ? `${seats.available}/${seats.total}` : 'FULL'}</span>
           </div>
