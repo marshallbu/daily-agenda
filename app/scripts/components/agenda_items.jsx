@@ -120,7 +120,7 @@ class AgendaItems extends React.Component {
             <img src={event.image} alt="Event Description Image" className="img-rounded pull-right" />
             <h2>
               {event.title} <br/>
-              <small>Presented by {event.presenter}</small>
+              <small>Presented by {event.presenter.join(', ')}</small>
             </h2>
             <p className="lead">{event.description}</p>
             <p>
