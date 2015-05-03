@@ -3,6 +3,9 @@ var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
 
 class App extends React.Component {
+  /**
+   * A constructor.
+   */
   constructor(props) {
     // this replaces getInitialState()
     super(props);
@@ -11,6 +14,9 @@ class App extends React.Component {
     };
   }
 
+  /**
+   * Render component.
+   */
   render() {
 
     return (

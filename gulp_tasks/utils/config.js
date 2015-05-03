@@ -20,7 +20,10 @@ module.exports = {
                 '!./app/scripts/workers/**'
             ],
             styles: [
-                './app/styles/less/main.less'
+              './app/styles/less/main.less'
+            ],
+            watchstyles: [
+              './app/styles/**/*.less'
             ],
             images: [
               './app/images/**/*.{png,jpg,gif,svg}'

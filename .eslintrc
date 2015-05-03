@@ -10,6 +10,7 @@
 		"quotes": [1, "single"],
 		"no-underscore-dangle": 0,
 		"no-unused-vars": 1,
+		"no-trailing-spaces": 0,
 		"react/display-name": 0,
     "react/jsx-boolean-value": 1,
     "react/jsx-quotes": 1,
