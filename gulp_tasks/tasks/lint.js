@@ -5,6 +5,6 @@ var gulp = require('gulp'),
 gulp.task('lint', function () {
     return gulp.src(config.src.glob.scriptsToLint)
         .pipe(plugins.eslint())
-        .pipe(plugins.eslint.format())
-        .pipe(plugins.eslint.failOnError());
+        .pipe(plugins.eslint.format());
+        // .pipe(plugins.eslint.failAfterError());
 });

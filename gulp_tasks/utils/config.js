@@ -12,7 +12,7 @@ module.exports = {
         },
         glob: {
             scripts: [
-                './app/scripts/**/*.js',
+                './app/scripts/**/*.js'
             ],
             scriptsToLint: [
                 './app/scripts/**/*.js',
@@ -30,10 +30,10 @@ module.exports = {
             ],
             html: ['./app/*.html', './app/*.php'],
             partials: ['./app/partials/**/*.html'],
-            extras: ['./app/*.*', '!app/*.html'],
+            extras: ['./app/*.*', '!app/*.html']
         },
         file: {
-            app: './app/scripts/main.js',
+            app: './app/scripts/index.js',
             lib: './app/scripts/libs/libs.js',
             testConfig: './../../../test/config/karma.conf.js',
             text: [
@@ -41,7 +41,7 @@ module.exports = {
                 './app/favicon.ico',
                 './app/robots.txt',
                 './app/humans.txt'
-            ],
+            ]
         }
     },
     vendorRoot: './bower_modules/',
@@ -51,7 +51,7 @@ module.exports = {
             root: distRootDir,
             styles: distRootDir + 'mincss/',
             scripts: distRootDir + 'minjs/',
-            partials: distRootDir + 'partials/',
+            partials: distRootDir + 'partials/'
         },
         file: {
             app: 'app.min.js',
@@ -61,7 +61,7 @@ module.exports = {
     test: {
         dir: {
             src: './test/',
-            unit: './test/unit_spec/',
+            unit: './test/unit_spec/'
         },
         glob: {
             unit: ['./test/unit_spec/**/*.js']
