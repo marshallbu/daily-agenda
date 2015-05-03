@@ -1,6 +1,6 @@
-var gulp = require('gulp'),
-    plugins = require('gulp-load-plugins')(),
-    config = require('./../utils/config');
+var gulp = require('gulp');
+var plugins = require('gulp-load-plugins')();
+var config = require('./../utils/config');
 
 gulp.task('watch', ['build'], function() {
   var report, server;
@@ -24,6 +24,10 @@ gulp.task('watch', ['build'], function() {
 
   gulp.watch(config.src.glob.watchstyles, function() {
     return gulp.start('mincss');
+  });
+
+  gulp.watch(config.src.glob.fonts, function() {
+    return gulp.start('fonts');
   });
 
   gulp.watch(config.src.glob.images, function() {

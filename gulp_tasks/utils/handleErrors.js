@@ -1,7 +1,6 @@
 var plugins = require('gulp-load-plugins')();
 
 module.exports = function() {
-
   var args = Array.prototype.slice.call(arguments);
 
   // Send error to notification center with gulp-notify
