@@ -58,8 +58,9 @@ class AgendaItems extends React.Component {
 
           // add the event to the events container
           items.push(
-            <AgendaItem key={itemsCount++} positionStyles={styles} event={event} clickCallback={this.openModal.bind(this)} />
+            <AgendaItem key={itemsCount} itemId={itemsCount} positionStyles={styles} event={event} clickCallback={this.openModal.bind(this)} />
           );
+          itemsCount++;
         });
 
       });
@@ -91,6 +92,16 @@ class AgendaItems extends React.Component {
 
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    var modalContent;
+
+    if (this.state.showModal) {
+      modalContent = this.refs.detailsModal.getDOMNode().querySelector('.modal-content');
+      modalContent.tabIndex = 0;
+      modalContent.focus();
+    }
+  }
+
   /**
    * Render component.
    */
@@ -115,8 +126,9 @@ class AgendaItems extends React.Component {
       modal = (
         <Modal title="Event Details"
           onRequestHide={this.closeModal.bind(this)}
-          bsSize="large">
-          <div className="modal-body">
+          bsSize="large"
+          ref="detailsModal">
+          <div className="modal-body" ref="detailsModalBody">
             <img src={event.image} alt="Event Description Image" className="img-rounded pull-right" />
             <h2>
               {event.title} <br/>
